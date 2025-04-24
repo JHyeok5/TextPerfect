@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# GitHub Pages 배포에 필요한 권한 설정
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -25,6 +29,12 @@ jobs:
         run: npm run build
         env:
           CI: false
+
+      # Pages 배포를 위한 파일 준비
+      - name: Prepare for GitHub Pages
+        run: |
+          cp public/.nojekyll build/
+          cp public/404.html build/
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
