@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && echo > build/.nojekyll",
+    "build": "react-scripts build && cp build/index.html build/404.html && touch build/.nojekyll",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "netlify-dev": "netlify dev"
