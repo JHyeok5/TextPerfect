@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/TextPerfect/static/css/main.19d6f50e.css",
+    "main.js": "/TextPerfect/static/js/main.510f4728.js",
+    "index.html": "/TextPerfect/index.html",
+    "main.19d6f50e.css.map": "/TextPerfect/static/css/main.19d6f50e.css.map",
+    "main.510f4728.js.map": "/TextPerfect/static/js/main.510f4728.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.19d6f50e.css",
+    "static/js/main.510f4728.js"
+  ]
+}
