@@ -1,3 +1,62 @@
+# GitHub Pages 배포를 위한 설정 안내
+
+## 1. 권한 설정
+GitHub Actions가 저장소에 쓰기 권한이 필요하여 다음과 같이 설정해야 합니다:
+
+1. GitHub 저장소 페이지로 이동
+2. "Settings" 탭을 클릭
+3. 왼쪽 사이드바에서 "Actions" > "General" 메뉴 선택
+4. "Workflow permissions" 섹션에서 다음 설정을 변경:
+   - "Read and write permissions" 옵션 선택
+   - "Allow GitHub Actions to create and approve pull requests" 체크박스 활성화 (선택 사항)
+5. "Save" 버튼 클릭
+
+## 2. Personal Access Token 사용 (대안)
+GitHub Token 대신 Personal Access Token을 사용할 수도 있습니다:
+
+1. GitHub 계정 설정에서 Personal Access Token 생성 (repo 권한 필요)
+   - GitHub 프로필 > Settings > Developer settings > Personal access tokens > Generate new token
+   - 'repo' 권한 체크
+   - 토큰 생성 후 복사 (한 번만 표시되므로 안전하게 저장)
+   
+2. 생성한 토큰을 저장소의 Secrets에 추가
+   - 저장소 > Settings > Secrets and variables > Actions > New repository secret
+   - 이름: GH_PAGES_TOKEN
+   - 값: 복사한 토큰 붙여넣기
+   
+3. 워크플로우 파일 수정하여 이 토큰 사용:
+   ```yaml
+   - name: Deploy
+     uses: JamesIves/github-pages-deploy-action@v4
+     with:
+       branch: gh-pages
+       folder: build
+       token: ${{ secrets.GH_PAGES_TOKEN }}
+   ```
+
+## 3. GitHub Pages 활성화
+배포 후 GitHub Pages를 활성화하는 방법:
+
+1. 저장소 > Settings > Pages
+2. Source에서 'Deploy from a branch' 선택
+3. Branch 드롭다운에서 'gh-pages' 선택, /(root) 선택
+4. Save 클릭
+
+## 4. SPA 라우팅
+GitHub Pages는 SPA 라우팅을 기본적으로 지원하지 않아 다음 설정을 추가했습니다:
+- 404.html 페이지: SPA 라우팅을 위한 리디렉션 스크립트 포함
+- index.html: SPA 리디렉션 처리 스크립트 추가
+- .nojekyll 파일: Jekyll 처리 방지
+
+## 5. 문제 해결
+배포 실패 시 확인할 사항:
+- Workflow 권한 설정 확인
+- Personal Access Token 권한 및 유효기간 확인
+- GitHub Pages 분기 설정 확인
+
+배포가 성공하면 다음 URL에서 사이트에 접근할 수 있습니다:
+https://jhyeok5.github.io/TextPerfect
+
 GitHub Pages 배포를 위한 설계안
 1. GitHub Pages 특성 고려사항
 1.1 제약 사항
