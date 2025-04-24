@@ -2,6 +2,11 @@
 
 TextPerfect는 Claude API를 활용하여 목적에 맞는 텍스트 최적화를 제공하는 웹 서비스입니다.
 
+## 배포 URL
+
+애플리케이션은 다음 URL에서 확인할 수 있습니다:
+- GitHub Pages: https://jhyeok5.github.io/TextPerfect
+
 ## 주요 기능
 
 - 목적별 텍스트 최적화 (학술, 비즈니스, 기술, 일반)
