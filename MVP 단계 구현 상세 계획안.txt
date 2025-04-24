@@ -1,0 +1,137 @@
+MVP 단계 구현 상세 계획안
+1. MVP 범위 정의
+1.1 포함 기능
+
+기본 텍스트 입력 및 Claude API 연동
+4가지 기본 목적별 최적화 (학술, 비즈니스, 기술, 일반)
+기본 분석 및 색상 코딩 피드백
+원본/최적화 텍스트 비교 뷰
+결과 다운로드 (TXT 형식)
+무료 사용자 제한 (일일 1,000자)
+
+1.2 제외 기능 (추후 구현)
+
+고급 분석 리포트
+파일 업로드/다운로드 (DOCX, PDF)
+사용자 계정 및 저장 기능
+팀/기업용 기능
+API 서비스
+
+2. 프론트엔드 구현 계획
+2.1 페이지 구조
+
+홈페이지 / 랜딩 페이지
+텍스트 에디터 페이지
+결과 비교 페이지
+기본 설정 페이지
+정보 페이지 (사용법, 약관 등)
+
+2.2 컴포넌트 구조
+└── App
+    ├── Header
+    │   ├── Logo
+    │   ├── Navigation
+    │   └── UsageIndicator
+    ├── TextEditor
+    │   ├── SettingsPanel
+    │   │   ├── PurposeSelector
+    │   │   └── OptionsController
+    │   ├── EditorPane
+    │   └── AnalysisIndicators
+    ├── ResultsView
+    │   ├── ComparisonPane
+    │   ├── HighlightExplanation
+    │   └── DownloadOptions
+    ├── Footer
+    └── Modals
+        ├── UsageLimitModal
+        └── HelpModal
+2.3 상태 관리
+
+React Context API 또는 Redux 사용
+주요 상태:
+
+입력 텍스트 및 분석 결과
+사용자 설정 및 선호도
+사용량 추적
+UI 상태 (로딩, 에러 등)
+
+
+
+3. 백엔드 구현 계획
+3.1 API 엔드포인트
+
+/api/optimize: 텍스트 최적화 요청 처리
+/api/analyze: 기본 텍스트 분석
+/api/usage: 사용량 확인 및 제한 관리
+
+3.2 Claude API 연동
+
+목적별 프롬프트 템플릿 설계
+요청/응답 처리 및 에러 핸들링
+토큰 사용량 최적화 및 모니터링
+
+3.3 서버리스 함수 구조
+functions/
+├── optimize.js
+├── analyze.js
+├── usage.js
+└── utils/
+    ├── claude-api.js
+    ├── text-processing.js
+    └── rate-limiting.js
+4. 데이터 구조 계획
+4.1 텍스트 최적화 요청
+json{
+  "text": "최적화할 원본 텍스트",
+  "purpose": "academic|business|technical|general",
+  "options": {
+    "formality": 0-100,
+    "conciseness": 0-100,
+    "terminology": "basic|advanced"
+  },
+  "sessionId": "사용자 세션 ID"
+}
+4.2 최적화 응답
+json{
+  "original": "원본 텍스트",
+  "optimized": "최적화된 텍스트",
+  "changes": [
+    {
+      "type": "replacement|addition|removal",
+      "original": "원본 부분",
+      "optimized": "최적화된 부분",
+      "reason": "변경 이유",
+      "position": [start, end]
+    }
+  ],
+  "analysis": {
+    "readability": 0-100,
+    "professionalLevel": 0-100,
+    "clarity": 0-100
+  },
+  "usageInfo": {
+    "charactersProcessed": 1234,
+    "dailyRemaining": 5678
+  }
+}
+4.3 로컬 저장소 구조
+localStorage:
+- textperfect:session: 사용자 세션 ID
+- textperfect:usage: 사용량 정보
+- textperfect:settings: 사용자 설정
+- textperfect:history: 최근 최적화 결과 (제한된 수)
+5. 프로젝트 타임라인
+5.1 MVP 개발 단계
+
+1주차: 프로젝트 설정 및 기본 UI 구현
+2주차: Claude API 연동 및 기본 최적화 기능
+3주차: 분석 및 피드백 시스템 구현
+4주차: 테스트, 버그 수정 및 최적화
+
+5.2 테스트 계획
+
+내부 알파 테스트 (개발팀)
+제한된 베타 테스트 (초대 사용자)
+부하 테스트 및 성능 최적화
+사용성 테스트 및 UI/UX 개선
