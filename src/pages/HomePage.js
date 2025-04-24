@@ -11,12 +11,15 @@ const HomePage = () => {
             목적에 맞는 텍스트 최적화
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            TextPerfect는 Claude AI 기술을 활용하여 어떤 상황에든 최적화된 텍스트를 제공합니다. 
-            학술, 비즈니스, 기술 문서까지 모든 텍스트를 더 효과적으로 만들어 보세요.
+            TextPerfect는 Claude AI 기술을 활용하여 다양한 상황에 최적화된 텍스트를 제공합니다. 
+            학술, 비즈니스, 기술 문서 등 모든 종류의 텍스트를 더 효과적으로 개선해 보세요.
           </p>
           <Link to="/editor" className="btn-primary text-lg px-8 py-3">
             지금 시작하기
           </Link>
+          <p className="text-sm text-gray-500 mt-4">
+            v1.0.1 - 최신 업데이트: 2025년 4월
+          </p>
         </div>
       </section>
 
