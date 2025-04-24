@@ -41,4 +41,9 @@ jobs:
         with:
           branch: gh-pages
           folder: build
-          token: ${{ secrets.GITHUB_TOKEN }} 
+          # GitHub의 Action Secrets에 PAT를 설정하고 이 값을 사용해야 합니다.
+          # 주석: 여기서는 기본 GITHUB_TOKEN을 사용하지만 Repository 설정에서 
+          # Workflow permissions를 "Read and write permissions"로 변경해야 합니다.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 또는 Personal Access Token을 사용할 경우:
+          # token: ${{ secrets.GH_PAGES_TOKEN }} 
