@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && echo > build/.nojekyll",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "netlify-dev": "netlify dev"
@@ -49,5 +49,5 @@
     "postcss": "^8.4.30",
     "postcss-preset-env": "^9.1.4"
   },
-  "homepage": "."
+  "homepage": "https://jhyeok5.github.io/TextPerfect"
 } 
