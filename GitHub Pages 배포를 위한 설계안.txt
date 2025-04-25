@@ -55,7 +55,7 @@ GitHub Pages는 SPA 라우팅을 기본적으로 지원하지 않아 다음 설�
 - GitHub Pages 분기 설정 확인
 
 배포가 성공하면 다음 URL에서 사이트에 접근할 수 있습니다:
-https://jhyeok5.github.io/TextPerfect
+https://textperfect.space
 
 GitHub Pages 배포를 위한 설계안
 1. GitHub Pages 특성 고려사항

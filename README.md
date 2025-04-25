@@ -5,7 +5,7 @@ TextPerfect는 Claude API를 활용하여 목적에 맞는 텍스트 최적화�
 ## 배포 URL
 
 애플리케이션은 다음 URL에서 확인할 수 있습니다:
-- GitHub Pages: https://jhyeok5.github.io/TextPerfect
+- 웹사이트: https://textperfect.space
 
 ## 주요 기능
 
