@@ -1,0 +1,1 @@
+// 타입 정의 export용 index.ts 
