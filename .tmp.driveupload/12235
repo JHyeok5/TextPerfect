@@ -1,0 +1,38 @@
+0000000000000000000000000000000000000000 4b8d9e2bba744543bb1d79134f34cb576ad246d6 JHyeok5 <jh0580jh@naver.com> 1745484755 +0900	commit (initial): Initial commit
+4b8d9e2bba744543bb1d79134f34cb576ad246d6 c078c68a7707d93739a2be3b24f2cac1e60b7345 JHyeok5 <jh0580jh@naver.com> 1745485241 +0900	commit: Add package-lock.json for dependency caching
+c078c68a7707d93739a2be3b24f2cac1e60b7345 06383d1fb645a03a172b2a6c83de6425fa709fe2 JHyeok5 <jh0580jh@naver.com> 1745485532 +0900	commit: Fix package-lock.json to match package.json dependencies
+06383d1fb645a03a172b2a6c83de6425fa709fe2 0d7011ad58a6a9b3095ed51aaa256c287e14c5c0 JHyeok5 <jh0580jh@naver.com> 1745485561 +0900	commit: Update Node.js version from 16 to 18 in GitHub Actions workflow
+0d7011ad58a6a9b3095ed51aaa256c287e14c5c0 557854befad44fe4d8ba6533fb645dd771cbb896 JHyeok5 <jh0580jh@naver.com> 1745486006 +0900	commit: Add GITHUB_TOKEN to GitHub Pages deploy action
+557854befad44fe4d8ba6533fb645dd771cbb896 4336415d215783e85e29b78d2bf8455215ea2dcf JHyeok5 <jh0580jh@naver.com> 1745486183 +0900	commit: Update index.html
+4336415d215783e85e29b78d2bf8455215ea2dcf 139c480e956b07009426e30959f07d6d0e52b16f JHyeok5 <jh0580jh@naver.com> 1745486185 +0900	commit: Create 404.html
+139c480e956b07009426e30959f07d6d0e52b16f eb51ee03e59aed380692b05f9244416ef35ac0ae JHyeok5 <jh0580jh@naver.com> 1745486187 +0900	commit: Create .nojekyll
+eb51ee03e59aed380692b05f9244416ef35ac0ae e37f39868ececf7d24c66d6fe43af8f5c4ecd26e JHyeok5 <jh0580jh@naver.com> 1745486189 +0900	commit: Update package.json
+e37f39868ececf7d24c66d6fe43af8f5c4ecd26e 72111194463f435fa6599ff35b9fca62f27b80b6 JHyeok5 <jh0580jh@naver.com> 1745486192 +0900	commit: Update deploy.yml
+72111194463f435fa6599ff35b9fca62f27b80b6 b39ff7dbb71cede5cb02797072df53e70c43c3a1 JHyeok5 <jh0580jh@naver.com> 1745486435 +0900	commit: Update GitHub Pages 배포를 위한 설계안.txt
+b39ff7dbb71cede5cb02797072df53e70c43c3a1 751e93fca315ec265ba7ddcc01099af879d6e3b7 JHyeok5 <jh0580jh@naver.com> 1745486694 +0900	commit: Update deploy.yml
+751e93fca315ec265ba7ddcc01099af879d6e3b7 a52e95324a39bc4175d6c272f6a32ab3cc4bb39b JHyeok5 <jh0580jh@naver.com> 1745486753 +0900	commit: Update README.md with GitHub Pages deployment URL
+a52e95324a39bc4175d6c272f6a32ab3cc4bb39b fb0030e1b09c96ea21d07c1b9c90e35b0c77a102 JHyeok5 <jh0580jh@naver.com> 1745487094 +0900	commit: Update index.js
+fb0030e1b09c96ea21d07c1b9c90e35b0c77a102 e61316b22f359c439df71e45d01952ef8707671e JHyeok5 <jh0580jh@naver.com> 1745487097 +0900	commit: Update package.json
+e61316b22f359c439df71e45d01952ef8707671e 993a8de4274848779f743242bb38bec4733a8e63 JHyeok5 <jh0580jh@naver.com> 1745487099 +0900	commit: Update deploy.yml
+993a8de4274848779f743242bb38bec4733a8e63 09355af4dc6280dc24029beca8f949bc40458afd JHyeok5 <jh0580jh@naver.com> 1745487966 +0900	commit: Update deploy.yml
+09355af4dc6280dc24029beca8f949bc40458afd 603745d2e9a9406d5ff47fe32632a3e2ddafbcdd JHyeok5 <jh0580jh@naver.com> 1745488002 +0900	commit: 홈페이지 텍스트 수정 및 배포 설정 개선
+603745d2e9a9406d5ff47fe32632a3e2ddafbcdd 11bd379c5d15e277ce98959b89a7e42a610d4f2a JHyeok5 <jh0580jh@naver.com> 1745488536 +0900	commit: Fix: 배포 워크플로우 설정 수정 및 package-lock.json ignore 추가
+11bd379c5d15e277ce98959b89a7e42a610d4f2a ecb41c7627fcb1933d2de7e4c61993fa9378d10d JHyeok5 <jh0580jh@naver.com> 1745488547 +0900	commit: Remove package-lock.json from git tracking
+ecb41c7627fcb1933d2de7e4c61993fa9378d10d 58eb3e7c7979993ddc3493d1f25802cc4cd93024 JHyeok5 <jh0580jh@naver.com> 1745488712 +0900	commit: Git LFS 설정 추가 및 package-lock.json 추적 방식 변경
+58eb3e7c7979993ddc3493d1f25802cc4cd93024 78e6a1d1dd85780089997fca7b5c33ca02216412 JHyeok5 <jh0580jh@naver.com> 1745505115 +0900	commit: Remove package-lock.json from Git LFS
+78e6a1d1dd85780089997fca7b5c33ca02216412 bfcff67655bb3f73ac49d47b0df1125ecc436866 JHyeok5 <jh0580jh@naver.com> 1745505161 +0900	commit: Add package-lock.json as regular Git file
+bfcff67655bb3f73ac49d47b0df1125ecc436866 ee4b31c2fb16a103f1a25f11bcab4d4a2f24f28f JHyeok5 <jh0580jh@naver.com> 1745505439 +0900	commit: Fix package-lock.json rendering
+ee4b31c2fb16a103f1a25f11bcab4d4a2f24f28f eea22d4022b0756e2002421f3c62b7fa45574921 JHyeok5 <jh0580jh@naver.com> 1745505463 +0900	commit: Remove package-lock.json
+eea22d4022b0756e2002421f3c62b7fa45574921 2c58b288db8197652cf9cba21e5aee72ec7060e0 JHyeok5 <jh0580jh@naver.com> 1745505520 +0900	commit: Re-add package-lock.json as normal file
+2c58b288db8197652cf9cba21e5aee72ec7060e0 2a79ffc89bce29f67b97d1f80af3659782f19364 JHyeok5 <jh0580jh@naver.com> 1745505947 +0900	commit: Fix GitHub Actions workflow for package-lock.json
+2a79ffc89bce29f67b97d1f80af3659782f19364 6133f594799ba38d34ece997a3f16e4e1e28697a JHyeok5 <jh0580jh@naver.com> 1745508986 +0900	commit: Add custom domain textperfect.space
+6133f594799ba38d34ece997a3f16e4e1e28697a 5090b0a6119604ba703a092b1014cfa423de863a JHyeok5 <jh0580jh@naver.com> 1745547746 +0900	commit: Update homepage URL to textperfect.space
+5090b0a6119604ba703a092b1014cfa423de863a 101e0171acb9d8f10dcb8cc79aaf0a49b1634aa5 JHyeok5 <jh0580jh@naver.com> 1745548258 +0900	commit: Update domain references to textperfect.space across the project
+101e0171acb9d8f10dcb8cc79aaf0a49b1634aa5 096ef5b16ab89715556a885ec54722bd04ab902f User <jh0580jh@naver.com> 1750268191 +0900	commit: 2.0 업데이트
+096ef5b16ab89715556a885ec54722bd04ab902f 6ae83739398d44fa5dd031cf9d525e99328e27ce User <jh0580jh@naver.com> 1750268203 +0900	commit: 2.0 업데이트
+6ae83739398d44fa5dd031cf9d525e99328e27ce c8204655d597a3544c9da83a072dd78f7293a9de User <jh0580jh@naver.com> 1750268214 +0900	commit: 2.0 업데이트
+c8204655d597a3544c9da83a072dd78f7293a9de 7ac7212457f8c5dc4774a16f183f03fe51b15696 User <jh0580jh@naver.com> 1750268224 +0900	commit: 2.0 업데이트
+7ac7212457f8c5dc4774a16f183f03fe51b15696 2dbb0916186ebcec9cd962ddd25c835c4be3ead5 User <jh0580jh@naver.com> 1750268234 +0900	commit: 2.0 업데이트
+2dbb0916186ebcec9cd962ddd25c835c4be3ead5 82914b10355effccc6a3fecf4b812ec4a8ef576d User <jh0580jh@naver.com> 1750268243 +0900	commit: 2.0 업데이트
+82914b10355effccc6a3fecf4b812ec4a8ef576d 62cb500d0d9f96eaa9a2e5db40b73209429dc229 User <jh0580jh@naver.com> 1750268250 +0900	commit: 2.0 업데이트
+62cb500d0d9f96eaa9a2e5db40b73209429dc229 b16f8355b8ea109825272b8de21a957af39c8c43 User <jh0580jh@naver.com> 1750268256 +0900	commit: 2.0 업데이트
