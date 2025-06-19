@@ -4,7 +4,7 @@ import { useUser } from '../../contexts/UserContext';
 import ProgressBar from '../common/ProgressBar';
 
 export default function Header() {
-  const { user, subscription } = useUser();
+  const { user } = useUser();
   return (
     <header className="bg-white shadow flex items-center px-6 h-16 justify-between">
       <div className="flex items-center gap-6">
@@ -25,9 +25,11 @@ export default function Header() {
         <div className="relative group">
           <button className="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100">
             <span className="font-semibold">프로필</span>
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" /></svg>
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
-          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50">
+          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
             <Link to="/profile" className="block px-4 py-2 hover:bg-gray-50">내 프로필</Link>
             <Link to="/subscription" className="block px-4 py-2 hover:bg-gray-50">구독 관리</Link>
             <button className="block w-full text-left px-4 py-2 hover:bg-gray-50">로그아웃</button>
