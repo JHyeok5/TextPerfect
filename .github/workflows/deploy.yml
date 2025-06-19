@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 # GitHub Pages 배포에 필요한 권한 설정
@@ -13,12 +14,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout 🛎️
         uses: actions/checkout@v3
-        with:
-          lfs: true  # Git LFS 파일 체크아웃
 
-      - name: Setup Node.js
+      - name: Setup Node.js ⚙️
         uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -32,20 +31,18 @@ jobs:
             npm install --package-lock-only
           fi
 
-      - name: Install dependencies
-        run: |
-          npm ci || npm install
-          npm install --save-dev @babel/preset-react style-loader css-loader babel-loader
+      - name: Install dependencies 📦
+        run: npm ci
 
-      - name: Build
+      - name: Build 🔧
         run: npm run build
         env:
           CI: false
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: gh-pages
           folder: dist
+          branch: gh-pages
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }} 

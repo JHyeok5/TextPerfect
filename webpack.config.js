@@ -19,7 +19,7 @@ module.exports = {
     polyfill: ['core-js/stable', 'regenerator-runtime/runtime']
   },
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
     publicPath: '/',
     clean: true
