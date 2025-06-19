@@ -1,8 +1,13 @@
 {
-  "plugins": [
-    "office-addins"
-  ],
+  "plugins": ["react"],
   "extends": [
-    "plugin:office-addins/recommended"
-  ]
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "rules": {},
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

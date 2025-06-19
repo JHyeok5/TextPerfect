@@ -15,11 +15,8 @@
     "eject": "react-scripts eject",
     "build:dev": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
-    "lint": "office-addin-lint check",
-    "lint:fix": "office-addin-lint fix",
-    "prettier": "office-addin-lint prettier",
-    "validate": "office-addin-manifest validate manifest.xml",
-    "watch": "webpack --mode development --watch"
+    "watch": "webpack --mode development --watch",
+    "check-deps": "depcheck"
   },
   "dependencies": {
     "@fluentui/react": "^8.112.0",
@@ -49,6 +46,7 @@
     "babel-loader": "^9.1.3",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
+    "depcheck": "^1.4.7",
     "file-loader": "^6.2.0",
     "gh-pages": "^6.3.0",
     "html-loader": "^5.0.0",
