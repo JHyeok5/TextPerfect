@@ -23,7 +23,9 @@
     "start": "office-addin-debugging start manifest.xml",
     "stop": "office-addin-debugging stop manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
-    "watch": "webpack --mode development --watch"
+    "watch": "webpack --mode development --watch",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "core-js": "^3.36.0",
@@ -39,6 +41,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "eslint-plugin-office-addins": "^4.0.3",
     "file-loader": "^6.2.0",
+    "gh-pages": "^6.3.0",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.6.0",
     "office-addin-cli": "^2.0.3",
