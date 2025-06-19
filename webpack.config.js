@@ -42,7 +42,21 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader', 'postcss-loader']
+          use: [
+            'style-loader', 
+            'css-loader', 
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    require('tailwindcss'),
+                    require('autoprefixer'),
+                  ],
+                },
+              },
+            }
+          ]
         },
         {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
