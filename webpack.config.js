@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 
-const urlDev = "https://localhost:3000/";
+const urlDev = "https://localhost:3001/";
 const urlProd = "https://textperfect.space/";
 
 async function getHttpsOptions() {
@@ -15,7 +15,7 @@ async function getHttpsOptions() {
 
 module.exports = {
   entry: {
-    app: './src/index.js',
+    app: path.resolve(__dirname, 'src/index.js'),
     polyfill: ['core-js/stable', 'regenerator-runtime/runtime']
   },
   output: {
@@ -81,7 +81,7 @@ module.exports = {
       directory: path.join(__dirname, 'public')
     },
     hot: true,
-    port: 3000,
+    port: 3001,
     https: true
   },
   optimization: {
