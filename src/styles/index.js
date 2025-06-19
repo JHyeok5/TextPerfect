@@ -1,1 +1,0 @@
-// 공통 스타일 export용 index.js 
