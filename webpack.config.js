@@ -25,9 +25,9 @@ module.exports = async (env, options) => {
     },
     output: {
       path: path.resolve(__dirname, "dist"),
+      publicPath: process.env.NODE_ENV === 'production' ? '/TextPerfect/' : '/',
       filename: "[name].[contenthash].js",
       clean: true,
-      publicPath: "/",
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js", ".jsx", ".json"],
@@ -71,7 +71,7 @@ module.exports = async (env, options) => {
         filename: "index.html",
         template: "./public/index.html",
         chunks: ["polyfill", "app"],
-        favicon: path.resolve(__dirname, "public/favicon.ico")
+        favicon: "./assets/icon-16.png"
       }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
