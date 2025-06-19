@@ -5,7 +5,7 @@
   "homepage": "https://textperfect.space",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OfficeDev/Office-Addin-TaskPane.git"
+    "url": "https://github.com/JHyeok5/TextPerfect.git"
   },
   "license": "MIT",
   "scripts": {
@@ -55,7 +55,6 @@
     "html-webpack-plugin": "^5.5.3",
     "postcss": "^8.4.31",
     "postcss-loader": "^7.3.3",
-    "postcss-nesting": "^12.0.1",
     "style-loader": "^3.3.3",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.4.2",
