@@ -40,7 +40,11 @@ module.exports = async (env, options) => {
           use: {
             loader: "babel-loader",
             options: {
-              presets: ["@babel/preset-env", "@babel/preset-react"]
+              presets: [
+                "@babel/preset-env",
+                "@babel/preset-react",
+                "@babel/preset-typescript"
+              ]
             }
           }
         },
@@ -67,7 +71,7 @@ module.exports = async (env, options) => {
         filename: "index.html",
         template: "./public/index.html",
         chunks: ["polyfill", "app"],
-        favicon: "./public/favicon.ico"
+        favicon: path.resolve(__dirname, "public/favicon.ico")
       }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
@@ -79,7 +83,7 @@ module.exports = async (env, options) => {
           {
             from: "public",
             globOptions: {
-              ignore: ["**/index.html", "**/favicon.ico"],
+              ignore: ["**/index.html"],
             },
           },
           {
