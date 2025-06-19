@@ -1,0 +1,20 @@
+{
+  "short_name": "TextPerfect",
+  "name": "TextPerfect - 목적에 맞는 텍스트 최적화 서비스",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0ea5e9",
+  "background_color": "#ffffff"
+} 
