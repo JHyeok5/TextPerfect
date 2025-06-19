@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ComparisonView from '../components/ComparisonView';
 import AnalysisChart from '../components/AnalysisChart';
-import { useTextContext } from '../context/TextContext';
+import { useTextContext } from '../contexts/TextContext';
 
 const ResultsPage = () => {
   const { originalText, optimizedText } = useTextContext();
