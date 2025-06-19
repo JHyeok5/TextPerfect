@@ -33,14 +33,16 @@ jobs:
           fi
 
       - name: Install dependencies
-        run: npm ci || npm install  # npm ci가 실패하면 npm install 실행
+        run: |
+          npm ci || npm install
+          npm install --save-dev @babel/preset-react style-loader css-loader babel-loader
 
       - name: Build
         run: npm run build
         env:
           CI: false
 
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
