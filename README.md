@@ -32,7 +32,7 @@ TextPerfect는 Claude API를 활용하여 목적에 맞는 텍스트 최적화�
 1. 저장소 클론
 
 ```bash
-git clone https://github.com/yourusername/textperfect.git
+git clone https://github.com/JHyeok5/TextPerfect.git
 cd textperfect
 ```
 
