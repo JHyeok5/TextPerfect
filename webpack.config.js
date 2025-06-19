@@ -24,33 +24,25 @@ module.exports = async (env, options) => {
       commands: "./src/commands/commands.ts",
     },
     output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: '[name].[contenthash].js',
+      path: path.resolve(__dirname, "dist"),
+      filename: "[name].[contenthash].js",
       clean: true,
-      publicPath: '/',
+      publicPath: "/",
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".html", ".js", ".jsx"],
+      extensions: [".ts", ".tsx", ".html", ".js", ".jsx", ".json"],
     },
     module: {
       rules: [
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(ts|tsx|js|jsx)$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader"
-          },
-        },
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader"
-          },
-        },
-        {
-          test: /\.css$/,
-          use: ['style-loader', 'css-loader', 'postcss-loader'],
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-env", "@babel/preset-react"]
+            }
+          }
         },
         {
           test: /\.html$/,
@@ -58,54 +50,41 @@ module.exports = async (env, options) => {
           use: "html-loader",
         },
         {
-          test: /\.(png|jpg|jpeg|gif|ico|svg)$/,
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"],
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|ico)$/,
           type: "asset/resource",
           generator: {
-            filename: "assets/[name][ext][query]",
+            filename: "assets/[name][ext]",
           },
         },
       ],
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: "./public/index.html",
         filename: "index.html",
+        template: "./public/index.html",
         chunks: ["polyfill", "app"],
-        favicon: "./public/favicon.ico",
+        favicon: "./public/favicon.ico"
       }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
-        chunks: ["polyfill", "taskpane"],
-      }),
-      new HtmlWebpackPlugin({
-        filename: "commands.html",
-        template: "./src/commands/commands.html",
-        chunks: ["polyfill", "commands"],
+        chunks: ["polyfill", "taskpane"]
       }),
       new CopyWebpackPlugin({
         patterns: [
           {
             from: "public",
-            to: ".",
             globOptions: {
               ignore: ["**/index.html", "**/favicon.ico"],
             },
           },
           {
             from: "assets/*",
-            to: "assets/[name][ext][query]",
-          },
-          {
-            from: "manifest*.xml",
-            to: "[name]" + "[ext]",
-            transform(content) {
-              if (dev) {
-                return content;
-              } else {
-                return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
-              }
-            },
+            to: "assets/[name][ext]",
           },
         ],
       }),
