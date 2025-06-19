@@ -1,26 +1,21 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "jsx": "react",
-    "noEmitOnError": true,
-    "outDir": "lib",
-    "sourceMap": true,
     "target": "es5",
-    "lib": [
-      "es2015",
-      "dom"
-    ]
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["office-js"]
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "lib",
-    "lib-amd"
-  ],
-  "ts-node": { 
-    "files": true 
-  }
+  "include": ["src"]
 }

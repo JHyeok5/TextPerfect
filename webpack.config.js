@@ -13,98 +13,79 @@ async function getHttpsOptions() {
   return { ca: httpsOptions.ca, key: httpsOptions.key, cert: httpsOptions.cert };
 }
 
-module.exports = async (env, options) => {
-  const dev = options.mode === "development";
-  const config = {
-    devtool: "source-map",
-    entry: {
-      polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-      app: "./src/index.js",
-      taskpane: ["./src/taskpane/taskpane.ts", "./src/taskpane/taskpane.html"],
-      commands: "./src/commands/commands.ts",
-    },
-    output: {
-      path: path.resolve(__dirname, "dist"),
-      publicPath: process.env.NODE_ENV === 'production' ? '/TextPerfect/' : '/',
-      filename: "[name].[contenthash].js",
-      clean: true,
-    },
-    resolve: {
-      extensions: [".ts", ".tsx", ".html", ".js", ".jsx", ".json"],
-    },
-    module: {
-      rules: [
-        {
-          test: /\.(ts|tsx|js|jsx)$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                "@babel/preset-env",
-                "@babel/preset-react",
-                "@babel/preset-typescript"
-              ]
-            }
+module.exports = {
+  entry: {
+    taskpane: "./src/taskpane/taskpane.ts",
+    commands: "./src/commands/commands.ts"
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+    clean: true
+  },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".jsx"]
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript"
+            ]
           }
-        },
-        {
-          test: /\.html$/,
-          exclude: /node_modules/,
-          use: "html-loader",
-        },
-        {
-          test: /\.css$/,
-          use: ["style-loader", "css-loader"],
-        },
-        {
-          test: /\.(png|jpg|jpeg|gif|ico)$/,
-          type: "asset/resource",
-          generator: {
-            filename: "assets/[name][ext]",
-          },
-        },
-      ],
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        filename: "index.html",
-        template: "./public/index.html",
-        chunks: ["polyfill", "app"],
-        favicon: "./assets/icon-16.png"
-      }),
-      new HtmlWebpackPlugin({
-        filename: "taskpane.html",
-        template: "./src/taskpane/taskpane.html",
-        chunks: ["polyfill", "taskpane"]
-      }),
-      new CopyWebpackPlugin({
-        patterns: [
-          {
-            from: "public",
-            globOptions: {
-              ignore: ["**/index.html"],
-            },
-          },
-          {
-            from: "assets/*",
-            to: "assets/[name][ext]",
-          },
-        ],
-      }),
-    ],
-    devServer: {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
+        }
       },
-      server: {
-        type: "https",
-        options: env.WEBPACK_BUILD || options.https !== undefined ? options.https : await getHttpsOptions(),
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"]
       },
-      port: process.env.npm_package_config_dev_server_port || 3000,
-      historyApiFallback: true,
+      {
+        test: /\.(png|jpg|jpeg|gif|ico)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "assets/[name][ext][query]"
+        }
+      }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: "taskpane.html",
+      template: "./src/taskpane/taskpane.html",
+      chunks: ["taskpane"]
+    }),
+    new HtmlWebpackPlugin({
+      filename: "commands.html",
+      template: "./src/commands/commands.html",
+      chunks: ["commands"]
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: "assets/*",
+          to: "assets/[name][ext][query]"
+        },
+        {
+          from: "manifest.xml",
+          to: "[name][ext]"
+        }
+      ]
+    })
+  ],
+  devServer: {
+    headers: {
+      "Access-Control-Allow-Origin": "*"
     },
-  };
-
-  return config;
+    server: {
+      type: "https"
+    },
+    port: 3000
+  }
 };

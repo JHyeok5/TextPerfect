@@ -5,16 +5,27 @@
 
 /* global document, Office, Word */
 
-Office.onReady((info) => {
-  if (info.host === Office.HostType.Word) {
-    document.getElementById("sideload-msg").style.display = "none";
-    document.getElementById("app-body").style.display = "flex";
-    
-    // 분석 버튼 이벤트 리스너 등록
-    document.getElementById("analyze-text").onclick = analyzeSelectedText;
-    // 개선 사항 적용 버튼 이벤트 리스너 등록
-    document.getElementById("apply-suggestions").onclick = applySuggestions;
-  }
+import "office-ui-fabric-react/dist/css/fabric.min.css";
+import { initializeIcons } from '@fluentui/react/lib/Icons';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import TaskPane from "./TaskPane";
+
+initializeIcons();
+
+let isOfficeInitialized = false;
+
+const render = (Component) => {
+  ReactDOM.render(
+    React.createElement(Component, { isOfficeInitialized }),
+    document.getElementById("container")
+  );
+};
+
+/* Render application after Office initializes */
+Office.onReady(() => {
+  isOfficeInitialized = true;
+  render(TaskPane);
 });
 
 let currentAnalysis = null;
