@@ -167,12 +167,6 @@ exports.handler = async (event, context) => {
       return createResponse(405, { error: 'Method not allowed' });
     }
 
-    // 요청 검증
-    const validationResult = validateRequest(event);
-    if (!validationResult.isValid) {
-      return createResponse(401, { error: validationResult.error });
-    }
-
     // 요청 본문 파싱
     const { text, purpose, options } = JSON.parse(event.body);
 
@@ -180,35 +174,28 @@ exports.handler = async (event, context) => {
     if (!text || !purpose || !options) {
       return createResponse(400, { error: 'Missing required fields' });
     }
-
-    // 문자 수 제한 확인 (1000자)
-    if (text.length > 1000) {
-      return createResponse(400, {
-        error: '무료 버전에서는 1000자까지만 처리할 수 있습니다.'
-      });
-    }
+    
+    // 문자 수 제한은 상위 플랜에서 해제될 수 있으므로 주석 처리
+    // if (text.length > 1000) {
+    //   return createResponse(400, {
+    //     error: '무료 버전에서는 1000자까지만 처리할 수 있습니다.'
+    //   });
+    // }
 
     // Claude API 호출을 위한 프롬프트 생성
     const prompt = generatePrompt(text, purpose, options);
 
     // Claude API 호출
-    const optimizedText = await callClaude(prompt);
+    const claudeResponse = await callClaude(prompt);
+    
+    // Claude 응답이 JSON 형식이므로 파싱
+    const parsedResponse = JSON.parse(claudeResponse);
 
-    // 응답 생성
-    const response = {
-      original: text,
-      optimized: optimizedText,
-      analysis: {
-        readability: calculateReadability(optimizedText),
-        professionalLevel: calculateProfessionalLevel(optimizedText),
-        clarity: calculateClarity(optimizedText)
-      }
-    };
-
-    return createResponse(200, response);
+    return createResponse(200, parsedResponse);
   } catch (error) {
     console.error('Error in optimize function:', error);
-    return createResponse(500, { error: 'Internal server error' });
+    // 에러에 Claude 관련 정보가 포함될 수 있으므로, 클라이언트에게는 일반적인 메시지를 보냄
+    return createResponse(500, { error: 'An internal server error occurred while optimizing text.' });
   }
 };
 
@@ -233,28 +220,36 @@ function generatePrompt(text, purpose, options) {
     '전문 용어를 적극 활용하여' : '기본적인 용어를 사용하여';
 
   return `
-다음 텍스트를 ${purposeDescriptions[purpose]} 스타일로 최적화해주세요.
-${formalityLevel}, ${concisenessLevel}, ${terminologyLevel} 작성해주세요.
+You are an expert text analyzer and optimizer. Your task is to analyze a given text, optimize it based on specific criteria, and then analyze the optimized version.
 
-원본 텍스트:
+Follow these steps precisely:
+1.  Analyze the 'Original Text' and provide scores for 'readability', 'professionalLevel', and 'clarity'. Each score must be an integer between 0 and 100.
+2.  Optimize the 'Original Text' based on the following style:
+    - Purpose: ${purposeDescriptions[purpose]}
+    - Formality: ${formalityLevel}
+    - Conciseness: ${concisenessLevel}
+    - Terminology: ${terminologyLevel}
+3.  Analyze the 'Optimized Text' you just created and provide scores for 'readability', 'professionalLevel', and 'clarity'.
+
+The 'Original Text' is:
+---
 ${text}
+---
 
-최적화된 텍스트를 반환해주세요.
+Provide your response ONLY in the following JSON format. Do not include any text or formatting outside of this JSON object.
+
+{
+  "before_analysis": {
+    "readability": <score_integer>,
+    "professionalLevel": <score_integer>,
+    "clarity": <score_integer>
+  },
+  "optimized_text": "<The optimized text goes here. Preserve line breaks with \\n>",
+  "after_analysis": {
+    "readability": <score_integer>,
+    "professionalLevel": <score_integer>,
+    "clarity": <score_integer>
+  }
+}
 `;
-}
-
-// 텍스트 분석 함수들 (임시 구현)
-function calculateReadability(text) {
-  // TODO: 실제 가독성 분석 구현
-  return Math.floor(Math.random() * 100);
-}
-
-function calculateProfessionalLevel(text) {
-  // TODO: 실제 전문성 분석 구현
-  return Math.floor(Math.random() * 100);
-}
-
-function calculateClarity(text) {
-  // TODO: 실제 명확성 분석 구현
-  return Math.floor(Math.random() * 100);
 } 

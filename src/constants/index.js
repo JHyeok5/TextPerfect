@@ -57,6 +57,7 @@ export const API_ENDPOINTS = {
   AUTH: '/api/auth',
   USER: '/api/user',
   ANALYSIS: '/api/analysis',
+  OPTIMIZE: '/.netlify/functions/optimize',
   SUBSCRIPTION: '/api/subscription',
   TEMPLATES: '/api/templates',
   COACH: '/api/coach',
