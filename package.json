@@ -32,7 +32,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@fluentui/react": "^8.123.0",
+    "@fluentui/react": "^8.112.0",
     "@types/node": "^20.11.25",
     "@types/office-js": "^1.0.513",
     "@types/react": "^17.0.87",
@@ -42,8 +42,8 @@
     "dotenv": "^16.4.5",
     "office-ui-fabric-react": "^7.204.1",
     "prop-types": "^15.8.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-router-dom": "^6.20.0",
     "typescript": "^5.4.2",
     "@headlessui/react": "^1.7.17",
