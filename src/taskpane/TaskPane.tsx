@@ -85,75 +85,40 @@ const TaskPane: React.FC<Props> = ({ isOfficeInitialized }) => {
 
   if (!isOfficeInitialized) {
     return (
-      <div className="ms-welcome__main">
-        <h2 className="ms-font-xl">Please sideload your add-in to see app body.</h2>
+      <div>
+        <div>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="ms-welcome__main">
-      <header className="ms-welcome__header ms-bgColor-neutralLighter">
-        <img width="90" height="90" src="../../assets/logo-filled.png" alt="TextPerfect" title="TextPerfect" />
-        <h1 className="ms-font-su">TextPerfect</h1>
-      </header>
+    <div>
+      <div>
+        <h2>텍스트 분석</h2>
+        <button onClick={() => window.analyzeSelectedText()}>선택된 텍스트 분석</button>
+      </div>
 
-      <div className="ms-Grid">
-        <div className="ms-Grid-row">
-          <div className="ms-Grid-col ms-sm12">
-            <div className="analysis-section">
-              <h2 className="ms-font-xl">텍스트 분석</h2>
-              <button className="ms-Button ms-Button--primary" onClick={analyzeSelectedText}>
-                <span className="ms-Button-label">선택한 텍스트 분석</span>
-              </button>
-
-              {showResults && currentAnalysis && (
-                <div className="results-section">
-                  <h3 className="ms-font-l">분석 결과</h3>
-                  
-                  <div className="result-item">
-                    <h4 className="ms-font-m">문법 검사</h4>
-                    <div>
-                      {currentAnalysis.grammarIssues.map((issue, index) => (
-                        <div key={index} className="error-text">
-                          <p>{issue.text}: {issue.suggestion}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="result-item">
-                    <h4 className="ms-font-m">문체 분석</h4>
-                    <div>
-                      {currentAnalysis.styleSuggestions.map((suggestion, index) => (
-                        <div key={index} className="suggestion-text">
-                          <p>{suggestion}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="result-item">
-                    <h4 className="ms-font-m">가독성 분석</h4>
-                    <div>
-                      <div className="score-text">{currentAnalysis.readabilityScore.score}점</div>
-                      <p>수준: {currentAnalysis.readabilityScore.level}</p>
-                      <p>{currentAnalysis.readabilityScore.details}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {showResults && (
-              <div className="improvement-section">
-                <button className="ms-Button ms-Button--hero" onClick={applySuggestions}>
-                  <span className="ms-Button-label">개선 사항 적용</span>
-                </button>
-              </div>
-            )}
-          </div>
+      <div id="analysis-results" style={{ display: "none" }}>
+        <h3>분석 결과</h3>
+        
+        <div>
+          <h4>문법 검사</h4>
+          <div id="grammar-issues"></div>
         </div>
+
+        <div>
+          <h4>문체 분석</h4>
+          <div id="style-suggestions"></div>
+        </div>
+
+        <div>
+          <h4>가독성 점수</h4>
+          <div id="readability-score"></div>
+        </div>
+
+        <button id="apply-suggestions" style={{ display: "none" }} onClick={() => window.applySuggestions()}>
+          개선 사항 적용
+        </button>
       </div>
     </div>
   );

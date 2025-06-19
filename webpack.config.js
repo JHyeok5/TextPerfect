@@ -15,73 +15,78 @@ async function getHttpsOptions() {
 
 module.exports = {
   entry: {
-    polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
-    app: "./src/index.js"
+    app: './src/index.js',
+    polyfill: ['core-js/stable', 'regenerator-runtime/runtime']
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].js",
-    publicPath: "/",
+    path: path.resolve(__dirname, 'build'),
+    filename: '[name].js',
+    publicPath: '/',
     clean: true
-  },
-  resolve: {
-    extensions: [".js", ".jsx", ".json"]
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"]
+            presets: [
+              '@babel/preset-env',
+              ['@babel/preset-react', { runtime: 'automatic' }]
+            ]
           }
         }
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ['style-loader', 'css-loader', 'postcss-loader']
       },
       {
-        test: /\.(png|jpg|jpeg|gif|ico)$/,
-        type: "asset/resource",
+        test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+        type: 'asset/resource',
         generator: {
-          filename: "assets/[name][ext][query]"
+          filename: 'assets/[name][ext]'
         }
       }
     ]
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: {
+      '@': path.resolve(__dirname, 'src')
+    }
+  },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html',
+      inject: true
+    }),
     new CopyWebpackPlugin({
       patterns: [
-        {
-          from: "public",
-          to: ".",
+        { 
+          from: 'public',
           globOptions: {
-            ignore: ["**/index.html"]
+            ignore: ['**/index.html']
           }
-        },
-        {
-          from: "assets/*",
-          to: "assets/[name][ext][query]"
         }
       ]
-    }),
-    new HtmlWebpackPlugin({
-      filename: "index.html",
-      template: "./public/index.html",
-      chunks: ["polyfill", "app"]
     })
   ],
   devServer: {
-    headers: {
-      "Access-Control-Allow-Origin": "*"
+    historyApiFallback: true,
+    static: {
+      directory: path.join(__dirname, 'public')
     },
-    server: {
-      type: "https"
-    },
+    hot: true,
     port: 3000,
-    historyApiFallback: true
+    https: true
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
   }
 };

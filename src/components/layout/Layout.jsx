@@ -5,12 +5,16 @@ import Sidebar from './Sidebar';
 import Footer from './Footer';
 
 function Layout({ children }) {
+  if (!children) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 container mx-auto px-4 py-8 bg-gray-50">
+        <main className="flex-1 p-6">
           {children}
         </main>
       </div>
@@ -20,7 +24,7 @@ function Layout({ children }) {
 }
 
 Layout.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node
 };
 
 export default React.memo(Layout); 
