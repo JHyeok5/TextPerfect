@@ -1,17 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './styles/globals.css';
 import './index.css';
 import App from './App';
+import packageJson from '../package.json';
 
-const root = document.getElementById('root');
+const container = document.getElementById('root');
+const root = createRoot(container);
 
-ReactDOM.render(
+const basename = new URL(packageJson.homepage).pathname;
+
+root.render(
   <React.StrictMode>
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter basename={basename}>
       <App />
     </BrowserRouter>
-  </React.StrictMode>,
-  root
+  </React.StrictMode>
 ); 
