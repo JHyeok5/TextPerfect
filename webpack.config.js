@@ -1,17 +1,8 @@
 /* eslint-disable no-undef */
 
-const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
-
-const urlDev = "https://localhost:3001/";
-const urlProd = "https://textperfect.space/";
-
-async function getHttpsOptions() {
-  const httpsOptions = await devCerts.getHttpsServerOptions();
-  return { ca: httpsOptions.ca, key: httpsOptions.key, cert: httpsOptions.cert };
-}
 
 module.exports = {
   entry: {
@@ -24,17 +15,21 @@ module.exports = {
     publicPath: '/',
     clean: true
   },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.html', '.js', '.jsx']
+  },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
               '@babel/preset-env',
-              ['@babel/preset-react', { runtime: 'automatic' }]
+              '@babel/preset-react',
+              '@babel/preset-typescript'
             ]
           }
         }
@@ -44,29 +39,25 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'postcss-loader']
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/[name][ext]'
-        }
+        test: /\.(png|jpg|jpeg|gif|ico)$/,
+        type: 'asset/resource'
+      },
+      {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        use: 'html-loader'
       }
     ]
-  },
-  resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    alias: {
-      '@': path.resolve(__dirname, 'src')
-    }
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
       filename: 'index.html',
-      inject: true
+      chunks: ['app', 'polyfill']
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { 
+        {
           from: 'public',
           globOptions: {
             ignore: ['**/index.html']
@@ -76,17 +67,17 @@ module.exports = {
     })
   ],
   devServer: {
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
+    server: {
+      type: 'https'
+    },
+    port: 3002,
     historyApiFallback: true,
+    hot: true,
     static: {
       directory: path.join(__dirname, 'public')
-    },
-    hot: true,
-    port: 3001,
-    https: true
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
     }
   }
 };
