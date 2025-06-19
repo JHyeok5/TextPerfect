@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const axios = require('axios');
 const { error } = require('./response');
 
 // Claude 프롬프트 템플릿 예시
@@ -8,30 +8,47 @@ const PROMPT_TEMPLATES = {
   // ...확장 가능
 };
 
-async function callClaude({ prompt, apiKey, model = 'claude-3-opus-20240229', maxTokens = 1024 }) {
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: maxTokens,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    });
-    if (!res.ok) {
-      return error({ code: 'CLAUDE_API_ERROR', message: `Claude API 오류: ${res.statusText}`, status: res.status });
-    }
-    const data = await res.json();
-    return data;
-  } catch (e) {
-    return error({ code: 'CLAUDE_API_ERROR', message: e.message, status: 500 });
+/**
+ * Claude API를 호출하는 함수
+ * @param {string} prompt 프롬프트 텍스트
+ * @returns {Promise<string>} 최적화된 텍스트
+ */
+exports.callClaude = async (prompt) => {
+  const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+  
+  if (!CLAUDE_API_KEY) {
+    throw new Error('Claude API key is not configured');
   }
-}
+
+  try {
+    const response = await axios.post(
+      'https://api.anthropic.com/v1/messages',
+      {
+        model: 'claude-3-opus-20240229',
+        max_tokens: 4000,
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.3
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01'
+        }
+      }
+    );
+
+    return response.data.content[0].text;
+  } catch (error) {
+    console.error('Claude API error:', error);
+    throw new Error('Failed to call Claude API');
+  }
+};
 
 function parseClaudeResponse(data) {
   // Claude 응답에서 실제 텍스트 추출

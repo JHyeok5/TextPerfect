@@ -41,8 +41,23 @@ function checkPermission(user, requiredRole = 'user') {
   return null;
 }
 
+/**
+ * 요청의 유효성을 검증하는 함수
+ * @param {object} event Netlify Functions 이벤트 객체
+ * @returns {object} 검증 결과 객체
+ */
+exports.validateRequest = (event) => {
+  // 현재는 간단한 검증만 수행
+  // TODO: 실제 인증/인가 로직 구현
+  return {
+    isValid: true,
+    error: null
+  };
+};
+
 module.exports = {
   checkApiKey,
   rateLimit,
   checkPermission,
+  validateRequest,
 }; 

@@ -1,5 +1,8 @@
 require('dotenv').config();
 const axios = require('axios');
+const { callClaude } = require('./utils/claude');
+const { createResponse } = require('./utils/response');
+const { validateRequest } = require('./utils/auth');
 
 // Prompts for different purposes
 const prompts = {
@@ -157,196 +160,101 @@ const adjustPromptForOptions = (prompt, options) => {
 };
 
 // Main handler function
-exports.handler = async function(event, context) {
-  // CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
-  };
-  
-  // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ message: 'Preflight call successful' })
-    };
-  }
-  
+exports.handler = async (event, context) => {
   try {
-    // Parse request body
-    const requestBody = JSON.parse(event.body);
-    const { text, purpose = 'general', options = {} } = requestBody;
-    
-    // Validate input
-    if (!text || text.trim() === '') {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: '텍스트를 입력해주세요.' })
-      };
+    // POST 메서드만 허용
+    if (event.httpMethod !== 'POST') {
+      return createResponse(405, { error: 'Method not allowed' });
     }
-    
-    // Get the base prompt for the selected purpose
-    const basePrompt = prompts[purpose] || prompts.general;
-    
-    // Adjust prompt based on options
-    const finalPrompt = adjustPromptForOptions(basePrompt, {
-      formality: options.formality || 50,
-      conciseness: options.conciseness || 50,
-      terminology: options.terminology || 'basic'
-    });
-    
-    // In a real implementation, you would call the Claude API here
-    // For MVP, we'll simulate the response to avoid requiring API keys during development
-    
-    // Mock API call (replace with actual Claude API call in production)
-    let response;
-    if (process.env.CLAUDE_API_KEY) {
-      // Actual Claude API call
-      try {
-        response = await callClaudeAPI(text, finalPrompt);
-      } catch (apiError) {
-        console.error('Claude API error:', apiError);
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({ error: 'Claude API 호출 중 오류가 발생했습니다.' })
-        };
+
+    // 요청 검증
+    const validationResult = validateRequest(event);
+    if (!validationResult.isValid) {
+      return createResponse(401, { error: validationResult.error });
+    }
+
+    // 요청 본문 파싱
+    const { text, purpose, options } = JSON.parse(event.body);
+
+    // 입력값 검증
+    if (!text || !purpose || !options) {
+      return createResponse(400, { error: 'Missing required fields' });
+    }
+
+    // 문자 수 제한 확인 (1000자)
+    if (text.length > 1000) {
+      return createResponse(400, {
+        error: '무료 버전에서는 1000자까지만 처리할 수 있습니다.'
+      });
+    }
+
+    // Claude API 호출을 위한 프롬프트 생성
+    const prompt = generatePrompt(text, purpose, options);
+
+    // Claude API 호출
+    const optimizedText = await callClaude(prompt);
+
+    // 응답 생성
+    const response = {
+      original: text,
+      optimized: optimizedText,
+      analysis: {
+        readability: calculateReadability(optimizedText),
+        professionalLevel: calculateProfessionalLevel(optimizedText),
+        clarity: calculateClarity(optimizedText)
       }
-    } else {
-      // Mock response for development/demo
-      response = mockClaudeResponse(text, purpose);
-    }
-    
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(response)
     };
-    
+
+    return createResponse(200, response);
   } catch (error) {
-    console.error('Function error:', error);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: '텍스트 최적화 중 오류가 발생했습니다.' })
-    };
+    console.error('Error in optimize function:', error);
+    return createResponse(500, { error: 'Internal server error' });
   }
 };
 
-// Function to call Claude API (implement in production)
-async function callClaudeAPI(text, prompt) {
-  const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
-  
-  try {
-    const response = await axios.post(
-      'https://api.anthropic.com/v1/messages',
-      {
-        model: 'claude-3-opus-20240229',
-        max_tokens: 4000,
-        messages: [
-          {
-            role: 'user',
-            content: `${prompt}\n\nHere is the text to optimize:\n\n${text}`
-          }
-        ],
-        temperature: 0.3,
-        response_format: { type: 'json_object' }
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01'
-        }
-      }
-    );
-    
-    // Parse the JSON from Claude's response
-    return JSON.parse(response.data.content[0].text);
-    
-  } catch (error) {
-    console.error('Claude API error:', error);
-    throw new Error('Claude API 호출 중 오류가 발생했습니다.');
-  }
+// 프롬프트 생성 함수
+function generatePrompt(text, purpose, options) {
+  const purposeDescriptions = {
+    academic: '학술적이고 전문적인',
+    business: '비즈니스에 적합한 전문적이고 공식적인',
+    technical: '기술적이고 명확한',
+    general: '일반적이고 이해하기 쉬운'
+  };
+
+  const formalityLevel = options.formality > 75 ? '매우 격식있게' :
+    options.formality > 50 ? '격식있게' :
+    options.formality > 25 ? '보통 수준으로' : '편하게';
+
+  const concisenessLevel = options.conciseness > 75 ? '매우 간결하게' :
+    options.conciseness > 50 ? '간결하게' :
+    options.conciseness > 25 ? '보통 수준으로' : '자세하게';
+
+  const terminologyLevel = options.terminology === 'advanced' ?
+    '전문 용어를 적극 활용하여' : '기본적인 용어를 사용하여';
+
+  return `
+다음 텍스트를 ${purposeDescriptions[purpose]} 스타일로 최적화해주세요.
+${formalityLevel}, ${concisenessLevel}, ${terminologyLevel} 작성해주세요.
+
+원본 텍스트:
+${text}
+
+최적화된 텍스트를 반환해주세요.
+`;
 }
 
-// Mock function for development/demo
-function mockClaudeResponse(text, purpose) {
-  // Example improvements
-  const optimized = text
-    .replace(/very /g, '')
-    .replace(/really /g, '')
-    .replace(/just /g, '')
-    .replace(/that /g, '')
-    .replace(/quite /g, '')
-    .replace(/a lot/g, 'significantly');
-  
-  // Generate mock changes
-  const changes = [];
-  const words = text.split(' ');
-  let position = 0;
-  
-  for (let i = 0; i < words.length; i++) {
-    if (words[i].length > 5 && Math.random() > 0.8) {
-      const start = position;
-      const end = position + words[i].length;
-      const improvedWord = words[i].charAt(0).toUpperCase() + words[i].slice(1);
-      
-      changes.push({
-        type: 'replacement',
-        original: words[i],
-        optimized: improvedWord,
-        reason: '더 명확한 표현으로 개선',
-        position: [start, end]
-      });
-    }
-    position += words[i].length + 1; // +1 for the space
-  }
-  
-  // Mock analysis scores based on purpose
-  let analysis = {};
-  
-  switch (purpose) {
-    case 'academic':
-      analysis = {
-        readability: Math.floor(Math.random() * 30) + 70,
-        professionalLevel: Math.floor(Math.random() * 20) + 80,
-        clarity: Math.floor(Math.random() * 25) + 75,
-        relevance: Math.floor(Math.random() * 15) + 85
-      };
-      break;
-    case 'business':
-      analysis = {
-        readability: Math.floor(Math.random() * 25) + 75,
-        professionalLevel: Math.floor(Math.random() * 15) + 85,
-        clarity: Math.floor(Math.random() * 20) + 80,
-        conciseness: Math.floor(Math.random() * 20) + 80
-      };
-      break;
-    case 'technical':
-      analysis = {
-        readability: Math.floor(Math.random() * 30) + 70,
-        professionalLevel: Math.floor(Math.random() * 10) + 90,
-        clarity: Math.floor(Math.random() * 25) + 75,
-        accuracy: Math.floor(Math.random() * 15) + 85
-      };
-      break;
-    default: // general
-      analysis = {
-        readability: Math.floor(Math.random() * 20) + 80,
-        clarity: Math.floor(Math.random() * 20) + 80,
-        conciseness: Math.floor(Math.random() * 25) + 75,
-        relevance: Math.floor(Math.random() * 20) + 80
-      };
-  }
-  
-  return {
-    optimized,
-    changes,
-    analysis
-  };
+// 텍스트 분석 함수들 (임시 구현)
+function calculateReadability(text) {
+  // TODO: 실제 가독성 분석 구현
+  return Math.floor(Math.random() * 100);
+}
+
+function calculateProfessionalLevel(text) {
+  // TODO: 실제 전문성 분석 구현
+  return Math.floor(Math.random() * 100);
+}
+
+function calculateClarity(text) {
+  // TODO: 실제 명확성 분석 구현
+  return Math.floor(Math.random() * 100);
 } 

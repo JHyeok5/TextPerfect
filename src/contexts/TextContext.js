@@ -1,25 +1,43 @@
 import React, { createContext, useContext, useState } from 'react';
+import PropTypes from 'prop-types';
 
-const TextContext = createContext({
-  text: '',
-  setText: () => {},
-  error: null,
-  setError: () => {},
-});
+const TextContext = createContext();
 
-export function TextContextProvider({ children }) {
+export const TextContextProvider = ({ children }) => {
   const [text, setText] = useState('');
-  const [error, setError] = useState(null);
+  const [purpose, setPurpose] = useState('general');
+  const [options, setOptions] = useState({
+    formality: 50,
+    conciseness: 50,
+    terminology: 'basic'
+  });
+
+  const value = {
+    text,
+    setText,
+    purpose,
+    setPurpose,
+    options,
+    setOptions
+  };
 
   return (
-    <TextContext.Provider value={{ text, setText, error, setError }}>
+    <TextContext.Provider value={value}>
       {children}
     </TextContext.Provider>
   );
-}
+};
 
-export function useTextContext() {
-  return useContext(TextContext);
-}
+TextContextProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
+export const useTextContext = () => {
+  const context = useContext(TextContext);
+  if (context === undefined) {
+    throw new Error('useTextContext must be used within a TextContextProvider');
+  }
+  return context;
+};
 
 export default TextContext; 
