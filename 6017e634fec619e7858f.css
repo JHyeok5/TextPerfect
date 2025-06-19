@@ -13,7 +13,9 @@ var options = {};
 
 options.styleTagTransform = styleTagTransformFn;
 options.setAttributes = setAttributes;
-options.insert = insertFn.bind(null, "head");
+
+      options.insert = insertFn.bind(null, "head");
+    
 options.domAPI = domAPI;
 options.insertStyleElement = insertStyleElement;
 
