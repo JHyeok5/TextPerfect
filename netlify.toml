@@ -1,13 +1,13 @@
 [build]
   command = "npm run build"
-  publish = "build"
+  publish = "dist"
   functions = "netlify/functions"
 
 [dev]
   command = "npm start"
   port = 3000
   targetPort = 3000
-  publish = "build"
+  publish = "dist"
   autoLaunch = true
 
 [[redirects]]

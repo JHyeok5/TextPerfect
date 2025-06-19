@@ -2,12 +2,12 @@ import React, { createContext, useContext, useState } from 'react';
 
 const AnalyticsContext = createContext(null);
 
-export function AnalyticsProvider({ children }) {
+export const AnalyticsProvider = ({ children }) => {
   const [analyticsData, setAnalyticsData] = useState({});
 
   const logEvent = (eventName, eventProperties) => {
-    // In a real application, you would send this to your analytics service
-    console.log(`[Analytics] Event: ${eventName}`, eventProperties);
+    // 실제 분석 서비스(예: Google Analytics, Mixpanel)와 연동하는 로직을 여기에 추가합니다.
+    // console.log(`[Analytics] Event: ${eventName}`, eventProperties);
     setAnalyticsData(prevData => ({
       ...prevData,
       [Date.now()]: { eventName, eventProperties }
@@ -21,7 +21,7 @@ export function AnalyticsProvider({ children }) {
       {children}
     </AnalyticsContext.Provider>
   );
-}
+};
 
 export function useAnalytics() {
   const context = useContext(AnalyticsContext);
