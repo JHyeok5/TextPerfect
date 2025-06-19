@@ -1,2 +1,2 @@
 Office.onReady(function(){}),Office.actions.associate("action",function(e){var i={type:Office.MailboxEnums.ItemNotificationMessageType.InformationalMessage,message:"Performed action.",icon:"Icon.80x80",persistent:!0};Office.context.mailbox.item.notificationMessages.replaceAsync("ActionPerformanceNotification",i),e.completed()});
-//# sourceMappingURL=commands.js.map
+//# sourceMappingURL=commands.172adbb4a8978b4b602a.js.map
