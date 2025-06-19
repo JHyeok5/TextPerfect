@@ -15,30 +15,27 @@ async function getHttpsOptions() {
 
 module.exports = {
   entry: {
-    taskpane: "./src/taskpane/taskpane.ts",
-    commands: "./src/commands/commands.ts"
+    polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
+    app: "./src/index.js"
   },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
+    publicPath: "/",
     clean: true
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"]
+    extensions: [".js", ".jsx", ".json"]
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
-            presets: [
-              "@babel/preset-env",
-              "@babel/preset-react",
-              "@babel/preset-typescript"
-            ]
+            presets: ["@babel/preset-env", "@babel/preset-react"]
           }
         }
       },
@@ -56,27 +53,25 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      filename: "taskpane.html",
-      template: "./src/taskpane/taskpane.html",
-      chunks: ["taskpane"]
-    }),
-    new HtmlWebpackPlugin({
-      filename: "commands.html",
-      template: "./src/commands/commands.html",
-      chunks: ["commands"]
-    }),
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: "assets/*",
-          to: "assets/[name][ext][query]"
+          from: "public",
+          to: ".",
+          globOptions: {
+            ignore: ["**/index.html"]
+          }
         },
         {
-          from: "manifest.xml",
-          to: "[name][ext]"
+          from: "assets/*",
+          to: "assets/[name][ext][query]"
         }
       ]
+    }),
+    new HtmlWebpackPlugin({
+      filename: "index.html",
+      template: "./public/index.html",
+      chunks: ["polyfill", "app"]
     })
   ],
   devServer: {
@@ -86,6 +81,7 @@ module.exports = {
     server: {
       type: "https"
     },
-    port: 3000
+    port: 3000,
+    historyApiFallback: true
   }
 };

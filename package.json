@@ -2,6 +2,7 @@
   "name": "textperfect",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://textperfect.space",
   "repository": {
     "type": "git",
     "url": "https://github.com/OfficeDev/Office-Addin-TaskPane.git"
@@ -13,7 +14,7 @@
     "dev_server_port": 3000
   },
   "scripts": {
-    "start": "office-addin-debugging start manifest.xml",
+    "start": "webpack serve --mode development",
     "build": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "webpack --mode development",
@@ -37,14 +38,12 @@
     "@types/react-dom": "^17.0.26",
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
-    "core-js": "^3.43.0",
     "dotenv": "^16.4.5",
     "office-ui-fabric-react": "^7.204.1",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^6.22.3",
-    "regenerator-runtime": "^0.14.1",
+    "react-router-dom": "^6.30.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2"
   },
@@ -56,7 +55,8 @@
     "@babel/preset-typescript": "^7.27.1",
     "babel-loader": "^9.2.1",
     "copy-webpack-plugin": "^13.0.0",
-    "css-loader": "^6.10.0",
+    "core-js": "^3.43.0",
+    "css-loader": "^6.11.0",
     "eslint-plugin-office-addins": "^4.0.3",
     "file-loader": "^6.2.0",
     "gh-pages": "^6.3.0",
@@ -70,8 +70,10 @@
     "office-addin-prettier-config": "^2.0.1",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
+    "regenerator-runtime": "^0.14.1",
     "source-map-loader": "^5.0.0",
     "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.2",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.2"

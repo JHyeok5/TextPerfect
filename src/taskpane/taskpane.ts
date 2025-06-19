@@ -9,17 +9,44 @@ import "office-ui-fabric-react/dist/css/fabric.min.css";
 import { initializeIcons } from '@fluentui/react/lib/Icons';
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import TaskPane from "./TaskPane";
+import TaskPane from "./taskpane";
+
+declare global {
+  interface Window {
+    analyzeSelectedText: () => Promise<void>;
+    applySuggestions: () => Promise<void>;
+  }
+}
 
 initializeIcons();
 
 let isOfficeInitialized = false;
 
-const render = (Component) => {
-  ReactDOM.render(
-    React.createElement(Component, { isOfficeInitialized }),
-    document.getElementById("container")
-  );
+interface Analysis {
+  text: string;
+  grammarIssues: Array<{
+    type: string;
+    text: string;
+    suggestion: string;
+  }>;
+  styleSuggestions: string[];
+  readabilityScore: {
+    score: number;
+    level: string;
+    details: string;
+  };
+}
+
+let currentAnalysis: Analysis | null = null;
+
+const render = (Component: React.ComponentType<{ isOfficeInitialized: boolean }>) => {
+  const container = document.getElementById("container");
+  if (container) {
+    ReactDOM.render(
+      React.createElement(Component, { isOfficeInitialized }),
+      container
+    );
+  }
 };
 
 /* Render application after Office initializes */
@@ -28,10 +55,8 @@ Office.onReady(() => {
   render(TaskPane);
 });
 
-let currentAnalysis = null;
-
 // 선택된 텍스트 분석
-async function analyzeSelectedText() {
+window.analyzeSelectedText = async function() {
   try {
     await Word.run(async (context) => {
       // 선택된 텍스트 가져오기
@@ -76,7 +101,7 @@ async function analyzeSelectedText() {
     showError("텍스트 분석 중 오류가 발생했습니다.");
     console.error(error);
   }
-}
+};
 
 // 문법 검사 함수
 async function checkGrammar(text: string) {
@@ -107,37 +132,43 @@ function calculateReadability(text: string) {
 }
 
 // 문법 이슈 표시 함수
-function displayGrammarIssues(issues: any[]) {
+function displayGrammarIssues(issues: Array<{ type: string; text: string; suggestion: string }>) {
   const container = document.getElementById("grammar-issues");
-  container.innerHTML = issues.map(issue => `
-    <div class="error-text">
-      <p>${issue.text}: ${issue.suggestion}</p>
-    </div>
-  `).join("");
+  if (container) {
+    container.innerHTML = issues.map(issue => `
+      <div class="error-text">
+        <p>${issue.text}: ${issue.suggestion}</p>
+      </div>
+    `).join("");
+  }
 }
 
 // 문체 제안 표시 함수
 function displayStyleSuggestions(suggestions: string[]) {
   const container = document.getElementById("style-suggestions");
-  container.innerHTML = suggestions.map(suggestion => `
-    <div class="suggestion-text">
-      <p>${suggestion}</p>
-    </div>
-  `).join("");
+  if (container) {
+    container.innerHTML = suggestions.map(suggestion => `
+      <div class="suggestion-text">
+        <p>${suggestion}</p>
+      </div>
+    `).join("");
+  }
 }
 
 // 가독성 점수 표시 함수
-function displayReadabilityScore(result: any) {
+function displayReadabilityScore(result: { score: number; level: string; details: string }) {
   const container = document.getElementById("readability-score");
-  container.innerHTML = `
-    <div class="score-text">${result.score}점</div>
-    <p>수준: ${result.level}</p>
-    <p>${result.details}</p>
-  `;
+  if (container) {
+    container.innerHTML = `
+      <div class="score-text">${result.score}점</div>
+      <p>수준: ${result.level}</p>
+      <p>${result.details}</p>
+    `;
+  }
 }
 
 // 개선 사항 적용 함수
-async function applySuggestions() {
+window.applySuggestions = async function() {
   if (!currentAnalysis) {
     showError("먼저 텍스트를 분석해주세요.");
     return;
@@ -154,7 +185,7 @@ async function applySuggestions() {
     showError("개선 사항 적용 중 오류가 발생했습니다.");
     console.error(error);
   }
-}
+};
 
 // 에러 메시지 표시 함수
 function showError(message: string) {

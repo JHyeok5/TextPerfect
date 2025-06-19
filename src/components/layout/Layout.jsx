@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
 
-export default function Layout({ children }) {
+function Layout({ children }) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -16,4 +17,10 @@ export default function Layout({ children }) {
       <Footer />
     </div>
   );
-} 
+}
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export default React.memo(Layout); 

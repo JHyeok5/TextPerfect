@@ -16,8 +16,8 @@ import UsageLimitModal from './components/common/UsageLimitModal';
 
 function App() {
   return (
-    <UserProvider>
-      <AppProvider>
+    <AppProvider>
+      <UserProvider>
         <AnalyticsProvider>
           <TextContextProvider>
             <Layout>
@@ -29,14 +29,14 @@ function App() {
                 <Route path="/coaching" element={<CoachingPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/subscription" element={<SubscriptionPage />} />
-                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <UsageLimitModal />
             </Layout>
           </TextContextProvider>
         </AnalyticsProvider>
-      </AppProvider>
-    </UserProvider>
+      </UserProvider>
+    </AppProvider>
   );
 }
 
