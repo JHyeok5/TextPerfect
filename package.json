@@ -51,6 +51,7 @@
     "gh-pages": "^6.3.0",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.4.31",
     "postcss-loader": "^7.3.3",
     "style-loader": "^3.3.3",

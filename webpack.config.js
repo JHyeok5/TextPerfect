@@ -2,6 +2,7 @@
 
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 const webpack = require("webpack");
 const packageJson = require("./package.json");
@@ -18,7 +19,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',
-      publicPath: '/',
+      publicPath: isProduction ? repoName : '/',
       clean: true
     },
     resolve: {
@@ -43,7 +44,7 @@ module.exports = (env, argv) => {
         {
           test: /\.css$/,
           use: [
-            'style-loader', 
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
             'css-loader', 
             {
               loader: 'postcss-loader',
@@ -87,7 +88,8 @@ module.exports = (env, argv) => {
       }),
       new webpack.DefinePlugin({
         'process.env.PUBLIC_URL': JSON.stringify('')
-      })
+      }),
+      ...(isProduction ? [new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' })] : [])
     ],
     devServer: {
       headers: {
