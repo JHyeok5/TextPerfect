@@ -17,7 +17,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',
-      publicPath: isProduction ? '/TextPerfect/' : '/',
+      publicPath: '/',
       clean: true
     },
     resolve: {
