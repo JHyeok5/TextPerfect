@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js',
-      publicPath: isProduction ? repoName : '/',
+      publicPath: '/',
       clean: true
     },
     resolve: {
@@ -72,7 +72,7 @@ module.exports = (env, argv) => {
         ]
       }),
       new webpack.DefinePlugin({
-        'process.env.PUBLIC_URL': JSON.stringify(isProduction ? repoName : '')
+        'process.env.PUBLIC_URL': JSON.stringify('')
       })
     ],
     devServer: {
