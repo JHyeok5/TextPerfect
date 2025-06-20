@@ -53,7 +53,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 p-4">
+    <aside className="hidden md:flex flex-col w-80 bg-white border-r border-gray-100 p-4">
       {renderSidebarContent()}
     </aside>
   );

@@ -28,8 +28,9 @@ const TextEditor = ({ value, onChange }) => {
   ];
 
   return (
-    <div className="relative w-full h-full flex flex-col">
-      <div className="flex-grow relative">
+    <div className="w-full">
+      {/* 텍스트 입력 영역 - 고정 높이 유지 */}
+      <div className="relative h-80">
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -47,7 +48,7 @@ const TextEditor = ({ value, onChange }) => {
         </div>
       </div>
       
-      {/* UX 가이드 섹션 */}
+      {/* UX 가이드 섹션 - 입력창 아래로 확장 */}
       <div className="mt-4 border-t pt-4">
         <button
           onClick={() => setShowGuide(!showGuide)}
@@ -59,7 +60,10 @@ const TextEditor = ({ value, onChange }) => {
           <span className="font-medium">효과적인 텍스트 최적화 가이드</span>
         </button>
         
-        {showGuide && (
+        {/* 가이드 내용 - 애니메이션과 함께 확장 */}
+        <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          showGuide ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}>
           <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
             {tips.map((tip, index) => (
               <div key={index} className="flex gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
@@ -71,10 +75,8 @@ const TextEditor = ({ value, onChange }) => {
               </div>
             ))}
           </div>
-        )}
-        
-        {/* 추가 주의사항 */}
-        {showGuide && (
+          
+          {/* 추가 주의사항 */}
           <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
             <div className="flex items-start gap-2">
               <span className="text-amber-600 text-sm">⚠️</span>
@@ -84,7 +86,7 @@ const TextEditor = ({ value, onChange }) => {
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

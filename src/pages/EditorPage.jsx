@@ -108,7 +108,7 @@ export default function EditorPage() {
             ) : (
               <div className="flex items-center gap-2">
                 <span>🚀</span>
-                <span>텍스트 최적화</span>
+                <span>최적화 실행</span>
               </div>
             )}
           </Button>
@@ -131,7 +131,7 @@ export default function EditorPage() {
         )}
 
         {/* 텍스트 에디터 */}
-        <div className="h-96">
+        <div className="min-h-96">
           <TextEditor 
             value={text || ''} 
             onChange={handleTextChange} 
