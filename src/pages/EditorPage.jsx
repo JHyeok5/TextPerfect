@@ -8,31 +8,22 @@ import EditorSidebar from './EditorPage/EditorSidebar';
 import { apiRequest } from '../utils/api';
 import { API_ENDPOINTS } from '../constants';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTextContext } from '../contexts/TextContext';
 
 export default function EditorPage() {
-  const [text, setText] = useState('');
-  const [purpose, setPurpose] = useState('general');
-  
-  // 기본값을 명시적으로 설정하여 undefined 방지
-  const [options, setOptions] = useState({
-    formality: 50,
-    conciseness: 50,
-    terminology: 'basic',
-  });
+  // TextContext에서 상태 가져오기 (중복 제거)
+  const { 
+    text, 
+    setText, 
+    purpose, 
+    setPurpose, 
+    options, 
+    setOptions 
+  } = useTextContext();
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
-
-  // 안전한 options 변경 함수
-  const handleOptionsChange = (newOptions) => {
-    if (newOptions && typeof newOptions === 'object') {
-      setOptions(prevOptions => ({
-        ...prevOptions,
-        ...newOptions
-      }));
-    }
-  };
 
   const handleOptimize = async () => {
     if (!text.trim()) {
@@ -71,7 +62,7 @@ export default function EditorPage() {
             purpose={purpose}
             onPurposeChange={setPurpose}
             options={options}
-            onOptionsChange={handleOptionsChange}
+            onOptionsChange={setOptions}
           />
         </div>
 
