@@ -926,9 +926,6 @@ select {
 .ml-2 {
   margin-left: 0.5rem;
 }
-.ml-5 {
-  margin-left: 1.25rem;
-}
 .mr-1 {
   margin-right: 0.25rem;
 }
@@ -1119,9 +1116,6 @@ select {
 }
 .resize-none {
   resize: none;
-}
-.list-disc {
-  list-style-type: disc;
 }
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
