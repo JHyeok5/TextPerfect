@@ -48,23 +48,53 @@ export default function EditorPage() {
       toast.error('분석할 텍스트를 입력해주세요.');
       return;
     }
+
+    if (text.length < 10) {
+      toast.error('더 긴 텍스트를 입력해주세요. (최소 10자)');
+      return;
+    }
     
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
 
     try {
-      const result = await apiRequest(API_ENDPOINTS.OPTIMIZE, {
+      console.log('Starting optimization with:', { 
+        textLength: text.length, 
+        purpose: purpose || 'general', 
+        options: options || {} 
+      });
+
+      const result = await apiRequest('OPTIMIZE', {
         method: 'POST',
-        body: JSON.stringify({ text, purpose, options }),
+        body: JSON.stringify({ 
+          text, 
+          purpose: purpose || 'general', 
+          options: options || { formality: 50, conciseness: 50, terminology: 'basic' }
+        }),
       });
       
+      console.log('Optimization result:', result);
+
+      // 결과 검증
+      if (!result || !result.optimized_text) {
+        throw new Error('최적화 결과를 받을 수 없습니다.');
+      }
+
       setAnalysisResult(result);
-      handleTextChange(result.optimized_text);
-      toast.success('텍스트 최적화가 완료되었습니다!');
+      
+      // 최적화된 텍스트로 업데이트
+      if (result.optimized_text && result.optimized_text !== text) {
+        handleTextChange(result.optimized_text);
+        toast.success('텍스트 최적화가 완료되었습니다!');
+      } else {
+        toast.info('텍스트가 이미 최적화되어 있습니다.');
+      }
     } catch (e) {
-      setError(e.message);
-      toast.error(e.message || '텍스트 최적화 중 오류가 발생했습니다.');
+      console.error('Optimization error:', e);
+      const errorMessage = e.message || '텍스트 최적화 중 오류가 발생했습니다.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
