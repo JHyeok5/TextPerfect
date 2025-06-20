@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
-import Button from '../common/Button';
+import { Button } from '../common';
 
 // 로그인 기능 구현 전 사용할 더미 유저 정보
 const dummyUser = {

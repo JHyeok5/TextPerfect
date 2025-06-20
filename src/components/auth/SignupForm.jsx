@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Button from '../common/Button';
+import { Button } from '../common';
 // import { useUser } from '../../contexts/UserContext';
 
 export default function SignupForm({ onClose, onSwitchToLogin }) {

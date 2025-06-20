@@ -1,88 +1,83 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import ComparisonView from '../components/ComparisonView';
-import AnalysisChart from '../components/AnalysisChart';
+import React from 'react';
 import { useTextContext } from '../contexts/TextContext';
+import { Header, Footer, Button, Card } from '../components/common';
+import { ComparisonView, AnalysisChart } from '../components/analytics';
 
-const ResultsPage = () => {
-  const { originalText, optimizedText } = useTextContext();
-  const navigate = useNavigate();
-  
-  useEffect(() => {
-    // Redirect to editor if no optimized text exists
-    if (!originalText || !optimizedText) {
-      navigate('/editor');
-    }
-  }, [originalText, optimizedText, navigate]);
-  
-  if (!originalText || !optimizedText) {
-    return null; // Will redirect, no need to render anything
-  }
-  
+export default function ResultsPage() {
+  const { text } = useTextContext();
+
+  // 샘플 분석 결과 데이터
+  const analysisResult = {
+    readability: { before: 65, after: 85 },
+    clarity: { before: 70, after: 90 },
+    professionalism: { before: 60, after: 80 },
+    conciseness: { before: 55, after: 75 },
+  };
+
+  const originalText = text || "원본 텍스트가 여기에 표시됩니다.";
+  const optimizedText = "최적화된 텍스트가 여기에 표시됩니다. AI가 개선한 내용으로 더욱 명확하고 읽기 쉽게 작성되었습니다.";
+
   return (
-    <div>
-      <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">최적화 결과</h1>
-          <p className="text-gray-600 mt-2">
-            원본 텍스트와 최적화된 텍스트를 비교하고 분석 결과를 확인하세요.
-          </p>
-        </div>
-        
-        <div className="mt-4 sm:mt-0">
-          <Link to="/editor" className="btn-outline mr-3">
-            새 텍스트 최적화
-          </Link>
-        </div>
-      </div>
-      
-      <div className="mb-8">
-        <ComparisonView />
-      </div>
-      
-      <div className="mb-8">
-        <AnalysisChart />
-      </div>
-      
-      <div className="mt-12 bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h3 className="text-lg font-medium text-gray-800 mb-4">더 나은 텍스트를 위한 팁</h3>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">학술 텍스트</h4>
-            <ul className="text-sm text-gray-600 space-y-1 ml-5 list-disc">
-              <li>명확한 논지와 구조를 갖추세요.</li>
-              <li>주장을 뒷받침하는 근거와 인용을 포함하세요.</li>
-              <li>전문 용어를 적절히 사용하되, 필요시 설명을 추가하세요.</li>
-            </ul>
+    <div className="max-w-7xl mx-auto">
+      <Header 
+        title="최적화 결과" 
+        subtitle="AI가 분석하고 최적화한 텍스트 결과를 확인하세요." 
+      />
+
+      <div className="space-y-6">
+        {/* 텍스트 비교 */}
+        <ComparisonView 
+          originalText={originalText}
+          optimizedText={optimizedText}
+        />
+
+        {/* 분석 차트 */}
+        <AnalysisChart data={analysisResult} />
+
+        {/* 상세 분석 결과 */}
+        <Card>
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-4">상세 분석 결과</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-medium text-gray-800 mb-3">주요 개선점</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• 문장 구조가 더욱 명확해졌습니다</li>
+                  <li>• 전문 용어 사용이 적절히 조정되었습니다</li>
+                  <li>• 가독성이 20점 향상되었습니다</li>
+                  <li>• 전체적인 글의 흐름이 개선되었습니다</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-800 mb-3">품질 점수</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>전체 품질:</span>
+                    <span className="font-bold text-green-600">A+</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>개선도:</span>
+                    <span className="font-bold text-blue-600">+18%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>추천도:</span>
+                    <span className="font-bold text-purple-600">95%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">비즈니스 텍스트</h4>
-            <ul className="text-sm text-gray-600 space-y-1 ml-5 list-disc">
-              <li>핵심 메시지를 먼저 전달하세요.</li>
-              <li>전문 용어와 업계 관련 언어를 적절히 사용하세요.</li>
-              <li>명확한 행동 유도(Call to Action)를 포함하세요.</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">기술 문서</h4>
-            <ul className="text-sm text-gray-600 space-y-1 ml-5 list-disc">
-              <li>명확하고 단계별로 설명하세요.</li>
-              <li>필요한 경우 예시와 코드 샘플을 포함하세요.</li>
-              <li>대상 독자의 기술 수준에 맞게 용어를 조정하세요.</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium text-gray-700 mb-2">일반 텍스트</h4>
-            <ul className="text-sm text-gray-600 space-y-1 ml-5 list-disc">
-              <li>간결하고 명확한 문장을 사용하세요.</li>
-              <li>불필요한 수식어를 제거하세요.</li>
-              <li>대상 독자를 고려하여 적절한 톤을 선택하세요.</li>
-            </ul>
-          </div>
+        </Card>
+
+        {/* 액션 버튼들 */}
+        <div className="flex justify-center gap-4">
+          <Button variant="secondary">다시 최적화</Button>
+          <Button variant="primary">결과 저장</Button>
+          <Button variant="outline">공유하기</Button>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
-};
-
-export default ResultsPage; 
+} 

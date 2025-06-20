@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import ProgressBar from '../common/ProgressBar';
-import Button from '../common/Button';
-import Modal from '../common/Modal';
-import LoginForm from '../auth/LoginForm';
-import SignupForm from '../auth/SignupForm';
+import { ProgressBar, Button, Modal } from '../common';
+import { LoginForm, SignupForm } from '../auth';
 
 // 실제 로그인 기능 구현 전 사용할 더미 유저 정보
 const dummyUser = {

@@ -1,165 +1,158 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Header, Footer, Card } from '../components/common';
 
-const AboutPage = () => {
+export default function AboutPage() {
+  const teamMembers = [
+    {
+      name: 'AI 개발팀',
+      role: '핵심 AI 알고리즘 개발',
+      description: '자연어 처리와 텍스트 분석 전문가들이 모여 최고 품질의 AI 엔진을 만들고 있습니다.'
+    },
+    {
+      name: 'UX/UI 팀',
+      role: '사용자 경험 설계',
+      description: '직관적이고 효율적인 인터페이스로 누구나 쉽게 사용할 수 있는 서비스를 만듭니다.'
+    },
+    {
+      name: '언어학 전문가',
+      role: '언어 품질 검증',
+      description: '다양한 언어학적 관점에서 AI의 분석 결과를 검증하고 개선합니다.'
+    }
+  ];
+
+  const values = [
+    {
+      title: '혁신',
+      description: '최신 AI 기술을 활용하여 글쓰기의 새로운 가능성을 탐구합니다.',
+      icon: '💡'
+    },
+    {
+      title: '품질',
+      description: '정확하고 신뢰할 수 있는 분석 결과를 제공하기 위해 끊임없이 노력합니다.',
+      icon: '⭐'
+    },
+    {
+      title: '접근성',
+      description: '누구나 쉽게 사용할 수 있는 직관적인 서비스를 만듭니다.',
+      icon: '🌍'
+    },
+    {
+      title: '성장',
+      description: '사용자의 글쓰기 실력 향상을 돕는 것이 우리의 궁극적인 목표입니다.',
+      icon: '📈'
+    }
+  ];
+
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">TextPerfect 소개</h1>
-        <p className="text-gray-600 mt-2">
-          TextPerfect는 Anthropic의 Claude AI를 활용한 텍스트 최적화 서비스입니다.
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="md:col-span-2">
-          <div className="card h-full">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">목표와 비전</h2>
-            
-            <p className="text-gray-700 mb-4">
-              TextPerfect는 단순한 맞춤법/문법 검사를 넘어, 텍스트의 목적과 맥락을 이해하고 
-              최적의 표현과 구조로 변환하는 서비스를 제공합니다. 이를 통해 사용자들이 
-              더 효과적으로 의사소통할 수 있도록 돕습니다.
-            </p>
-            
-            <p className="text-gray-700 mb-4">
-              우리는 다음과 같은 가치를 중요하게 생각합니다:
-            </p>
-            
-            <ul className="list-disc pl-5 text-gray-700 space-y-2 mb-4">
-              <li>
-                <strong>목적 중심:</strong> 텍스트의 목적과 대상 독자를 최우선으로 고려합니다.
-              </li>
-              <li>
-                <strong>맥락 이해:</strong> 단순 규칙 기반이 아닌, 텍스트의 맥락과 의도를 고려한 최적화를 제공합니다.
-              </li>
-              <li>
-                <strong>투명성:</strong> 최적화 과정에서 변경된 내용과 그 이유를 명확하게 제시합니다.
-              </li>
-              <li>
-                <strong>사용자 주도:</strong> 사용자가 원하는 스타일과 톤을 직접 선택할 수 있도록 합니다.
-              </li>
-            </ul>
-            
-            <p className="text-gray-700">
-              TextPerfect는 학생, 연구자, 비즈니스 전문가, 콘텐츠 크리에이터 등 다양한 
-              분야의 사용자들이 더 나은 텍스트를 작성할 수 있도록 도움을 드리고자 합니다.
+    <div className="max-w-6xl mx-auto">
+      <Header 
+        title="TextPerfect 소개" 
+        subtitle="AI 기반 텍스트 최적화 서비스에 대해 알아보세요." 
+      />
+
+      <div className="space-y-8">
+        {/* 서비스 소개 */}
+        <Card>
+          <div className="p-8 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              AI와 함께하는 완벽한 글쓰기
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              TextPerfect는 Claude AI 기술을 활용하여 당신의 글을 더 명확하고, 전문적이며, 
+              매력적으로 만드는 혁신적인 텍스트 최적화 서비스입니다. 
+              학술, 비즈니스, 기술 등 다양한 목적에 맞게 글의 품질을 향상시켜 드립니다.
             </p>
           </div>
+        </Card>
+
+        {/* 핵심 가치 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="text-center p-6">
+            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">혁신</h3>
+            <p className="text-gray-600">
+              최신 AI 기술을 활용하여 지속적으로 발전하는 텍스트 최적화 솔루션을 제공합니다.
+            </p>
+          </Card>
+
+          <Card className="text-center p-6">
+            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">사용자 중심</h3>
+            <p className="text-gray-600">
+              사용자의 편의성과 만족도를 최우선으로 생각하며 직관적인 인터페이스를 제공합니다.
+            </p>
+          </Card>
+
+          <Card className="text-center p-6">
+            <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">품질</h3>
+            <p className="text-gray-600">
+              높은 품질의 텍스트 최적화를 통해 사용자의 커뮤니케이션 효과를 극대화합니다.
+            </p>
+          </Card>
         </div>
-        
-        <div className="card h-full">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">기술 스택</h2>
-          
-          <ul className="space-y-3">
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                AI
-              </span>
+
+        {/* 기술 스택 */}
+        <Card>
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">기술 스택</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <p className="font-medium">Claude API</p>
-                <p className="text-sm text-gray-600">맥락 인식 텍스트 최적화</p>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">AI & 백엔드</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• Claude 3.5 Sonnet - 최신 대화형 AI 모델</li>
+                  <li>• Netlify Functions - 서버리스 백엔드</li>
+                  <li>• 자연어 처리 알고리즘</li>
+                  <li>• 실시간 텍스트 분석</li>
+                </ul>
               </div>
-            </li>
-            
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                Frontend
-              </span>
               <div>
-                <p className="font-medium">React</p>
-                <p className="text-sm text-gray-600">사용자 인터페이스</p>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">프론트엔드</h3>
+                <ul className="space-y-2 text-gray-600">
+                  <li>• React 18 - 모던 웹 프레임워크</li>
+                  <li>• Tailwind CSS - 유틸리티 기반 스타일링</li>
+                  <li>• 반응형 웹 디자인</li>
+                  <li>• 최적화된 사용자 경험</li>
+                </ul>
               </div>
-            </li>
-            
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                Styling
-              </span>
+            </div>
+          </div>
+        </Card>
+
+        {/* 연락처 */}
+        <Card>
+          <div className="p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">문의하기</h2>
+            <p className="text-gray-600 mb-6">
+              TextPerfect에 대한 문의사항이나 제안이 있으시면 언제든 연락해 주세요.
+            </p>
+            <div className="flex justify-center space-x-8">
               <div>
-                <p className="font-medium">TailwindCSS</p>
-                <p className="text-sm text-gray-600">반응형 UI 디자인</p>
+                <div className="text-sm text-gray-500">이메일</div>
+                <div className="font-medium">contact@textperfect.com</div>
               </div>
-            </li>
-            
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                Backend
-              </span>
               <div>
-                <p className="font-medium">Netlify Functions</p>
-                <p className="text-sm text-gray-600">서버리스 API 처리</p>
+                <div className="text-sm text-gray-500">지원 시간</div>
+                <div className="font-medium">평일 9:00 - 18:00</div>
               </div>
-            </li>
-            
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                Hosting
-              </span>
-              <div>
-                <p className="font-medium">GitHub Pages</p>
-                <p className="text-sm text-gray-600">프론트엔드 호스팅</p>
-              </div>
-            </li>
-            
-            <li className="flex items-start">
-              <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2 mt-0.5">
-                Visualization
-              </span>
-              <div>
-                <p className="font-medium">Chart.js</p>
-                <p className="text-sm text-gray-600">데이터 시각화</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+            </div>
+          </div>
+        </Card>
       </div>
-      
-      <div className="card mb-12">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">주요 기능</h2>
-        
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-bold text-gray-700 mb-2">목적별 텍스트 최적화</h3>
-            <p className="text-gray-600">
-              학술, 비즈니스, 기술, 일반 등 다양한 목적에 맞는 텍스트 최적화 기능을 제공합니다.
-              각 목적별로 최적화 알고리즘과 평가 기준이 다르게 적용됩니다.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="font-bold text-gray-700 mb-2">세부 설정 조정</h3>
-            <p className="text-gray-600">
-              형식성, 간결성, 용어 수준 등 사용자가 원하는 텍스트 스타일을 세밀하게 조정할 수 있습니다.
-              이를 통해 상황과 대상 독자에 가장 적합한 텍스트를 생성할 수 있습니다.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="font-bold text-gray-700 mb-2">변경 사항 비교 및 설명</h3>
-            <p className="text-gray-600">
-              원본 텍스트와 최적화된 텍스트를 비교하고, 각 변경 사항에 대한 이유를 확인할 수 있습니다.
-              이를 통해 텍스트 최적화의 원리를 이해하고 더 나은 글쓰기 능력을 기를 수 있습니다.
-            </p>
-          </div>
-          
-          <div>
-            <h3 className="font-bold text-gray-700 mb-2">텍스트 분석 시각화</h3>
-            <p className="text-gray-600">
-              가독성, 전문성, 명확성 등 다양한 측면에서 텍스트 품질을 분석하고, 이를 직관적인 
-              차트와 그래프로 시각화합니다.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div className="text-center mb-8">
-        <Link to="/editor" className="btn-primary px-8 py-3">
-          지금 시작하기
-        </Link>
-      </div>
+
+      <Footer />
     </div>
   );
-};
-
-export default AboutPage; 
+} 

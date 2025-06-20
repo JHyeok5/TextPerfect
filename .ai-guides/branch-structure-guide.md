@@ -2,6 +2,8 @@
 
 이 문서는 TextPerfect 프로젝트의 GitHub Pages 배포를 위한 브랜치별 필수 파일 구조를 정의합니다.
 
+**최종 업데이트**: 2025년 6월 21일 - 번들 최적화 및 성능 개선 반영
+
 ## main 브랜치 구조
 
 main 브랜치는 프로젝트의 개발 소스코드를 관리하는 주 브랜치입니다.
@@ -11,12 +13,14 @@ main 브랜치는 프로젝트의 개발 소스코드를 관리하는 주 브랜
 ```
 TextPerfect/
 ├── .gitignore               # Git 무시 파일 설정
-├── package.json            # 프로젝트 의존성 및 스크립트 정의
+├── package.json            # 프로젝트 의존성 및 스크립트 정의 (번들 최적화 스크립트 포함)
 ├── package-lock.json       # 의존성 버전 고정
+├── babel.config.json       # Babel 설정 (성능 최적화 적용)
+├── webpack.config.js       # Webpack 설정 (코드 스플리팅 및 최적화)
 ├── README.md               # 프로젝트 문서
 ├── netlify.toml            # Netlify 설정
 ├── postcss.config.js       # PostCSS 설정
-├── tailwind.config.js      # Tailwind CSS 설정
+├── tailwind.config.js      # Tailwind CSS 설정 (purge 최적화)
 ├── public/                 # 정적 파일 디렉토리
 │   ├── index.html         # 메인 HTML 파일
 │   ├── manifest.json      # PWA 매니페스트
@@ -44,7 +48,8 @@ TextPerfect/
 
 1. **설정 파일**
    - 프로젝트 구성, 빌드, 배포 관련 설정 파일들
-   - 예: package.json, netlify.toml, postcss.config.js 등
+   - 예: package.json, webpack.config.js, babel.config.json, tailwind.config.js 등
+   - **2025.06.21 업데이트**: 번들 최적화를 위한 설정 강화
 
 2. **소스코드**
    - React 컴포넌트, 페이지, 유틸리티 등 실제 애플리케이션 코드
@@ -70,9 +75,13 @@ TextPerfect/
 ├── manifest.json           # PWA 매니페스트
 ├── CNAME                  # 커스텀 도메인 설정 (필요시)
 ├── 404.html               # 404 에러 페이지
-├── static/                # 빌드된 정적 파일
-│   ├── css/              # 컴파일된 CSS
-│   ├── js/               # 컴파일된 JavaScript
+├── static/                # 빌드된 정적 파일 (청크별 분할)
+│   ├── css/              # 컴파일된 CSS (최적화됨)
+│   ├── js/               # 컴파일된 JavaScript (12개 청크로 분할)
+│   │   ├── runtime.[hash].js     # 런타임 청크
+│   │   ├── react.[hash].js       # React 청크
+│   │   ├── vendors-*.[hash].js   # Vendor 청크들
+│   │   └── app.[hash].js         # 앱 청크
 │   └── media/            # 최적화된 미디어 파일
 └── asset-manifest.json    # 정적 자산 매핑
 ```
@@ -104,9 +113,10 @@ TextPerfect/
    - 자동화된 배포 프로세스를 통해서만 업데이트
 
 3. **배포 프로세스**
-   - main 브랜치에서 `npm run build` 실행
+   - main 브랜치에서 `npm run build` 실행 (최적화된 빌드)
    - 빌드된 파일을 gh-pages 브랜치에 배포
    - GitHub Actions를 통한 자동 배포 권장
+   - **2025.06.21 추가**: `npm run build:analyze`로 번들 분석 가능
 
 ## 주의사항
 

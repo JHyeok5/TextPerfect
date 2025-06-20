@@ -1,10 +1,70 @@
 import React from 'react';
+import { Header, Footer, Card, Button } from '../components/common';
 
 export default function TemplatesPage() {
+  const templates = [
+    {
+      id: 1,
+      title: '학술 논문',
+      description: '연구 논문, 리포트, 학위 논문 등 학술적 글쓰기에 최적화된 템플릿',
+      category: 'academic',
+      usage: 245
+    },
+    {
+      id: 2,
+      title: '비즈니스 제안서',
+      description: '사업 계획서, 제안서, 보고서 등 비즈니스 문서에 적합한 템플릿',
+      category: 'business',
+      usage: 189
+    },
+    {
+      id: 3,
+      title: '기술 문서',
+      description: 'API 문서, 기술 가이드, 매뉴얼 등 기술적 내용 작성용 템플릿',
+      category: 'technical',
+      usage: 156
+    },
+    {
+      id: 4,
+      title: '마케팅 콘텐츠',
+      description: '블로그 포스트, SNS 콘텐츠, 광고 카피 등 마케팅 자료용 템플릿',
+      category: 'marketing',
+      usage: 203
+    }
+  ];
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">템플릿</h1>
-      <p>다양한 목적에 맞는 텍스트 템플릿을 탐색하고 사용해보세요.</p>
+    <div className="max-w-6xl mx-auto">
+      <Header 
+        title="템플릿" 
+        subtitle="다양한 목적에 맞는 최적화 템플릿을 선택하세요." 
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {templates.map(template => (
+          <Card key={template.id} className="hover:shadow-lg transition-shadow">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <h3 className="text-lg font-bold text-gray-900">{template.title}</h3>
+                <span className="text-sm text-gray-500">{template.usage}회 사용</span>
+              </div>
+              <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                {template.description}
+              </p>
+              <div className="flex justify-between items-center">
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                  {template.category}
+                </span>
+                <Button variant="primary" size="sm">
+                  사용하기
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <Footer />
     </div>
   );
 } 

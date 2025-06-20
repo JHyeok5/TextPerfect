@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import Button from '../components/common/Button';
-import { ArrowRightIcon, ChartBarIcon, PencilSquareIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { Button } from '../components/common';
+import ArrowRightIcon from '@heroicons/react/24/outline/ArrowRightIcon';
+import ChartBarIcon from '@heroicons/react/24/outline/ChartBarIcon';
+import PencilSquareIcon from '@heroicons/react/24/outline/PencilSquareIcon';
+import SparklesIcon from '@heroicons/react/24/outline/SparklesIcon';
 
 const FeatureCard = ({ icon, title, description }) => (
   <div className="bg-white p-6 rounded-lg shadow transition hover:shadow-lg hover:-translate-y-1">

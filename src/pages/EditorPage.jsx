@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-import TextEditor from '../components/editor/TextEditor';
-import Button from '../components/common/Button';
-import AnalysisIndicators from '../components/editor/AnalysisIndicators';
+import { TextEditor, AnalysisIndicators } from '../components/editor';
+import { Button, LoadingSpinner } from '../components/common';
 import EditorSidebar from './EditorPage/EditorSidebar';
 import { apiRequest } from '../utils/api';
 import { API_ENDPOINTS } from '../constants';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import { useTextContext } from '../contexts/TextContext';
 
 export default function EditorPage() {
