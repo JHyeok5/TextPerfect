@@ -3,13 +3,16 @@
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
 const packageJson = require("./package.json");
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+  process.env.NODE_ENV = isProduction ? 'production' : 'development';
   const repoName = new URL(packageJson.homepage).pathname; // "/TextPerfect"
+  const publicPath = isProduction ? '/' : '/';
 
   return {
     entry: {
@@ -20,7 +23,7 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? '[name].[contenthash].js' : '[name].js',
       chunkFilename: isProduction ? '[name].[contenthash].chunk.js' : '[name].chunk.js',
-      publicPath: isProduction ? repoName : '/',
+      publicPath: publicPath,
       clean: true
     },
     resolve: {
@@ -97,8 +100,7 @@ module.exports = (env, argv) => {
                   helpers: true,
                   regenerator: true,
                   useESModules: false
-                }],
-                ...(isProduction ? [] : ['react-refresh/babel'])
+                }]
               ],
               cacheDirectory: true,
               cacheCompression: false
@@ -182,6 +184,9 @@ module.exports = (env, argv) => {
           chunkFilename: '[name].[contenthash].css'
         }),
         new webpack.optimize.AggressiveMergingPlugin()
+      ] : []),
+      ...(!isProduction ? [
+        new ReactRefreshWebpackPlugin()
       ] : [])
     ],
     devServer: {
