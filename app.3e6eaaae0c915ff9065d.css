@@ -1109,11 +1109,20 @@ select {
 .h-8 {
   height: 2rem;
 }
-.h-96 {
-  height: 24rem;
+.h-80 {
+  height: 20rem;
 }
 .h-full {
   height: 100%;
+}
+.max-h-0 {
+  max-height: 0px;
+}
+.max-h-96 {
+  max-height: 24rem;
+}
+.min-h-96 {
+  min-height: 24rem;
 }
 .min-h-screen {
   min-height: 100vh;
@@ -1148,11 +1157,11 @@ select {
 .w-6 {
   width: 1.5rem;
 }
-.w-64 {
-  width: 16rem;
-}
 .w-8 {
   width: 2rem;
+}
+.w-80 {
+  width: 20rem;
 }
 .w-full {
   width: 100%;
@@ -1865,6 +1874,9 @@ select {
 }
 .opacity-0 {
   opacity: 0;
+}
+.opacity-100 {
+  opacity: 1;
 }
 .opacity-25 {
   opacity: 0.25;
