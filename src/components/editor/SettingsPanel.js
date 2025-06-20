@@ -9,30 +9,23 @@ const PURPOSES = [
 ];
 
 const SettingsPanel = ({ purpose, options, onPurposeChange, onOptionsChange }) => {
-  // 방어 코드: options가 undefined일 경우 기본값 사용
-  const safeOptions = options || {
-    formality: 50,
-    conciseness: 50,
-    terminology: 'basic'
-  };
-
   const handleFormalityChange = (e) => {
     onOptionsChange({
-      ...safeOptions,
+      ...options,
       formality: parseInt(e.target.value, 10)
     });
   };
 
   const handleConcisenessChange = (e) => {
     onOptionsChange({
-      ...safeOptions,
+      ...options,
       conciseness: parseInt(e.target.value, 10)
     });
   };
 
   const handleTerminologyChange = (e) => {
     onOptionsChange({
-      ...safeOptions,
+      ...options,
       terminology: e.target.value
     });
   };
@@ -65,13 +58,13 @@ const SettingsPanel = ({ purpose, options, onPurposeChange, onOptionsChange }) =
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            격식도 ({safeOptions.formality}%)
+            격식도 ({options.formality}%)
           </label>
           <input
             type="range"
             min="0"
             max="100"
-            value={safeOptions.formality}
+            value={options.formality}
             onChange={handleFormalityChange}
             className="w-full"
           />
@@ -79,13 +72,13 @@ const SettingsPanel = ({ purpose, options, onPurposeChange, onOptionsChange }) =
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            간결성 ({safeOptions.conciseness}%)
+            간결성 ({options.conciseness}%)
           </label>
           <input
             type="range"
             min="0"
             max="100"
-            value={safeOptions.conciseness}
+            value={options.conciseness}
             onChange={handleConcisenessChange}
             className="w-full"
           />
@@ -96,7 +89,7 @@ const SettingsPanel = ({ purpose, options, onPurposeChange, onOptionsChange }) =
             전문용어 수준
           </label>
           <select
-            value={safeOptions.terminology}
+            value={options.terminology}
             onChange={handleTerminologyChange}
             className="w-full p-2 border rounded"
           >
@@ -115,7 +108,7 @@ SettingsPanel.propTypes = {
     formality: PropTypes.number.isRequired,
     conciseness: PropTypes.number.isRequired,
     terminology: PropTypes.oneOf(['basic', 'advanced']).isRequired
-  }),
+  }).isRequired,
   onPurposeChange: PropTypes.func.isRequired,
   onOptionsChange: PropTypes.func.isRequired
 };
