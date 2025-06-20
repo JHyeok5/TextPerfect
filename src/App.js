@@ -57,31 +57,24 @@ function App() {
         <UserProvider>
           <AnalyticsProvider>
             <TextContextProvider>
-              <Suspense fallback={<PageLoadingFallback />}>
-                <Routes>
-                  {/* EditorPage는 Layout 없이 독립적으로 렌더링 */}
-                  <Route path="/editor" element={<EditorPage />} />
-                  
-                  {/* 나머지 페이지들은 Layout과 함께 렌더링 */}
-                  <Route path="/*" element={
-                    <Layout>
-                      <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/analysis" element={<AnalysisPage />} />
-                        <Route path="/templates" element={<TemplatesPage />} />
-                        <Route path="/coaching" element={<CoachingPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/subscription" element={<SubscriptionPage />} />
-                        <Route path="/about" element={<AboutPage />} />
-                        <Route path="/results" element={<ResultsPage />} />
-                        <Route path="*" element={<NotFoundPage />} />
-                      </Routes>
-                    </Layout>
-                  } />
-                </Routes>
-              </Suspense>
-              <UsageLimitModal />
+              <Layout>
+                <Suspense fallback={<PageLoadingFallback />}>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/editor" element={<EditorPage />} />
+                    <Route path="/analysis" element={<AnalysisPage />} />
+                    <Route path="/templates" element={<TemplatesPage />} />
+                    <Route path="/coaching" element={<CoachingPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/subscription" element={<SubscriptionPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/results" element={<ResultsPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </Suspense>
+                <UsageLimitModal />
+              </Layout>
             </TextContextProvider>
           </AnalyticsProvider>
         </UserProvider>
