@@ -435,4 +435,93 @@ optimization: {
 
 ---
 
+## 🚨 **개발 시 주의사항 및 오류 방지 가이드라인**
+
+### **React 컴포넌트 개발 시 주의사항**
+
+#### 1. **React.lazy 사용 규칙**
+```javascript
+// ❌ 잘못된 사용 - named export로 lazy 컴포넌트 export
+export const Component = lazy(() => import('./Component'));
+
+// ✅ 올바른 사용 - 일반 export 또는 직접 lazy 사용
+export { default as Component } from './Component';
+// 또는
+const Component = React.lazy(() => import('./Component'));
+```
+
+#### 2. **Props 방어적 코딩**
+```javascript
+// ❌ 위험한 코드 - undefined 접근 가능
+const Component = ({ options }) => {
+  return <div>{options.formality}</div>;
+};
+
+// ✅ 안전한 코드 - 기본값 설정
+const Component = ({ options = {} }) => {
+  const safeOptions = { formality: 50, ...options };
+  return <div>{safeOptions.formality}</div>;
+};
+```
+
+#### 3. **파일 중복 방지**
+- 같은 디렉토리에 동일한 이름의 .js/.jsx 파일 금지
+- 파일 삭제 시 모든 import 경로 확인 필수
+- webpack resolve.extensions 순서 고려
+
+### **빌드 및 배포 시 주의사항**
+
+#### 1. **React Refresh 설정**
+- webpack.config.js에서 NODE_ENV 명시적 설정
+- babel.config.json 환경별 설정 사용
+- 프로덕션 빌드 후 `findstr /C:"RefreshSig" dist\*.js` 확인
+
+#### 2. **PublicPath 설정**
+```javascript
+// 커스텀 도메인 사용 시
+const publicPath = '/';
+
+// GitHub Pages 서브디렉토리 사용 시  
+const publicPath = '/repository-name/';
+```
+
+#### 3. **Import 최적화**
+```javascript
+// ❌ 전체 패키지 import (큰 번들 크기)
+import { Icon1, Icon2 } from '@heroicons/react/24/outline';
+
+// ✅ 개별 import (트리 셰이킹 가능)
+import Icon1 from '@heroicons/react/24/outline/Icon1';
+import Icon2 from '@heroicons/react/24/outline/Icon2';
+```
+
+### **Context 사용 시 주의사항**
+
+#### 1. **Context Provider 순서**
+```javascript
+// Context Provider는 의존성 순서대로 배치
+<AppProvider>
+  <UserProvider>
+    <AnalyticsProvider>
+      <TextContextProvider>
+        {children}
+      </TextContextProvider>
+    </AnalyticsProvider>
+  </UserProvider>
+</AppProvider>
+```
+
+#### 2. **Context 값 검증**
+```javascript
+export const useTextContext = () => {
+  const context = useContext(TextContext);
+  if (context === undefined) {
+    throw new Error('useTextContext must be used within a TextContextProvider');
+  }
+  return context;
+};
+```
+
+---
+
 이 가이드는 TextPerfect 프로젝트의 **완전한 구조 맵**입니다. 모든 파일이 어떻게 연결되어 있는지, 어떤 역할을 하는지 명확하게 파악할 수 있으며, 향후 확장과 유지보수에 필수적인 참고 자료입니다. 

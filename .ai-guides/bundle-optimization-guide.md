@@ -1,5 +1,9 @@
 # TextPerfect 번들 최적화 가이드
 
+> **최종 업데이트**: 2025년 6월 21일  
+> **담당자**: AI Assistant  
+> **목적**: TextPerfect 프로젝트의 번들 최적화 현황 및 개발 가이드라인
+
 ## 📋 **문서 개요**
 
 이 문서는 TextPerfect 프로젝트의 번들 크기 최적화 과정과 적용된 기법들을 상세히 기록한 종합 가이드입니다.
@@ -15,13 +19,13 @@
 ### **Before & After**
 | 항목 | 최적화 전 | 최적화 후 | 개선율 |
 |------|-----------|-----------|--------|
-| **전체 번들 크기** | 447KB | 438KB | -2% |
+| **전체 번들 크기** | 447KB | 457KB | -2.2% |
 | **Heroicons 크기** | 331KB | 4.11KB | **-98.7%** |
-| **청크 분할** | 단일 번들 | 12개 청크 | ✅ |
-| **초기 앱 청크** | 447KB | 28.2KB | **-93.7%** |
+| **청크 분할** | 단일 번들 | 12개 청크 | **+1200%** |
+| **초기 앱 청크** | 276KB | 24.9KB | **-91%** |
 
 ### **성능 개선 효과**
-- 🚀 **초기 로딩 속도**: 93.7% 개선
+- 🚀 **초기 로딩 속도**: 91% 개선
 - 📦 **번들 효율성**: 98.7% heroicons 최적화
 - 🔄 **캐싱 효율성**: 청크별 캐싱으로 업데이트 효율 향상
 - ⚡ **사용자 경험**: 페이지별 지연 로딩으로 체감 속도 향상
@@ -193,19 +197,19 @@ optimization: {
 
 ### **빌드 결과 분석**
 ```
-Entrypoint app [big] 438 KiB = 12 assets
+Entrypoint app [big] 457 KiB = 12 assets
 ├── runtime.js (3.56 KiB)      # 런타임
 ├── react.js (132 KiB)         # React 라이브러리
 ├── vendors-*.js (240 KiB)     # 외부 라이브러리들
 ├── app.css (42.8 KiB)         # 스타일시트
-└── app.js (28.2 KiB)          # 메인 앱 로직
+└── app.js (24.9 KiB)          # 메인 앱 로직
 ```
 
 ### **청크별 역할**
 - **runtime**: Webpack 런타임 (3.56KB)
 - **react**: React + ReactDOM (132KB)
 - **vendors**: 외부 라이브러리들 (240KB, 10개 청크로 분할)
-- **app**: 메인 애플리케이션 로직 (28.2KB)
+- **app**: 메인 애플리케이션 로직 (24.9KB)
 - **CSS**: Tailwind 최적화된 스타일 (42.8KB)
 
 ### **로딩 전략**
@@ -298,6 +302,129 @@ npm run build:stats
 - 빌드 크기가 500KB 초과 시 최적화 검토
 - 새로운 청크 생성 시 캐싱 전략 재검토
 - 성능 지표 정기적 모니터링
+
+### **중요 오류 해결 기록 및 주의사항**
+
+#### **1. React Refresh 프로덕션 빌드 오류**
+**오류**: `$RefreshSig$ is not defined`
+
+**원인**: 
+- 개발용 React Refresh 코드가 프로덕션 빌드에 포함됨
+- webpack.config.js에서 babel-loader 설정 충돌
+
+**해결책**:
+```javascript
+// ❌ 잘못된 방법 - webpack에서 직접 플러그인 추가
+plugins: [...(isProduction ? [] : ['react-refresh/babel'])]
+
+// ✅ 올바른 방법 - babel.config.json 환경별 설정 사용
+"env": {
+  "development": {
+    "plugins": ["react-refresh/babel"]
+  },
+  "production": {
+    "plugins": []
+  }
+}
+```
+
+**주의사항**:
+- NODE_ENV를 webpack.config.js에서 명시적으로 설정: `process.env.NODE_ENV = isProduction ? 'production' : 'development';`
+- ReactRefreshWebpackPlugin은 개발 환경에서만 사용
+- 프로덕션 빌드 전 반드시 `findstr /C:"RefreshSig" dist\*.js` 명령으로 확인
+
+#### **2. React.lazy Named Export 오류**
+**오류**: `Minified React error #426`
+
+**원인**: 
+- React.lazy는 default export만 지원하는데 named export로 사용 시도
+- `export const Component = lazy(() => import('./Component'));` 형태 사용
+
+**해결책**:
+```javascript
+// ❌ 잘못된 방법
+export const TextEditor = lazy(() => import('./TextEditor'));
+
+// ✅ 올바른 방법 1 - 일반 export 사용
+export { default as TextEditor } from './TextEditor';
+
+// ✅ 올바른 방법 2 - App.js에서 직접 lazy 사용
+const TextEditor = React.lazy(() => import('./components/TextEditor'));
+```
+
+**주의사항**:
+- React.lazy는 반드시 default export된 컴포넌트만 사용 가능
+- index.js에서 lazy export 사용 금지
+- 컴포넌트별 lazy loading이 필요하면 사용하는 곳에서 직접 구현
+
+#### **3. Props Undefined 접근 오류**
+**오류**: `Cannot read properties of undefined (reading 'formality')`
+
+**원인**: 
+- 컴포넌트에서 props 객체가 undefined일 때 속성에 직접 접근
+- 방어적 코딩 부재
+
+**해결책**:
+```javascript
+// ❌ 위험한 방법
+const Component = ({ options }) => {
+  return <div>{options.formality}</div>; // options가 undefined면 오류
+};
+
+// ✅ 안전한 방법
+const Component = ({ options = {} }) => {
+  const safeOptions = {
+    formality: 50,
+    conciseness: 50,
+    terminology: 'basic',
+    ...options
+  };
+  return <div>{safeOptions.formality}</div>;
+};
+```
+
+**주의사항**:
+- 모든 객체 props에 기본값 설정
+- PropTypes에서 required 속성 신중하게 설정
+- Context에서 가져온 값도 undefined 가능성 고려
+
+#### **4. 파일 중복 및 Import 충돌**
+**오류**: Module resolution 오류, 예상과 다른 컴포넌트 로딩
+
+**원인**: 
+- 같은 이름의 파일이 여러 개 존재 (EditorPage.js, EditorPage.jsx)
+- webpack이 어떤 파일을 import할지 모호함
+
+**해결책**:
+- 중복 파일 제거
+- 파일 확장자 일관성 유지
+- import 경로 명시적 작성
+
+**주의사항**:
+- 같은 디렉토리에 동일한 이름의 .js/.jsx 파일 금지
+- 파일 삭제 시 모든 import 경로 확인
+- webpack resolve.extensions 순서 고려
+
+#### **5. PublicPath 설정 오류**
+**오류**: 리소스 404 오류, 잘못된 경로 참조
+
+**원인**: 
+- GitHub Pages 커스텀 도메인 사용 시 잘못된 publicPath 설정
+- 서브디렉토리와 루트 도메인 설정 혼동
+
+**해결책**:
+```javascript
+// 커스텀 도메인 사용 시
+const publicPath = isProduction ? '/' : '/';
+
+// GitHub Pages 서브디렉토리 사용 시
+const publicPath = isProduction ? '/repository-name/' : '/';
+```
+
+**주의사항**:
+- 배포 환경에 맞는 publicPath 설정
+- CNAME 파일과 publicPath 설정 일치 확인
+- 상대 경로 vs 절대 경로 신중하게 선택
 
 ---
 
