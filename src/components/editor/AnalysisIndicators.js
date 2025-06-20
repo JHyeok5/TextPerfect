@@ -34,16 +34,31 @@ ScoreDisplay.propTypes = {
 };
 
 const AnalysisIndicators = ({ result }) => {
-  if (!result) {
+  if (!result || !result.before_analysis || !result.after_analysis) {
     return null;
   }
 
   const { before_analysis, after_analysis } = result;
 
+  const safeBeforeAnalysis = before_analysis || {};
+  const safeAfterAnalysis = after_analysis || {};
+
   const indicators = [
-    { label: '가독성', before: before_analysis.readability, after: after_analysis.readability },
-    { label: '전문성', before: before_analysis.professionalLevel, after: after_analysis.professionalLevel },
-    { label: '명확성', before: before_analysis.clarity, after: after_analysis.clarity },
+    { 
+      label: '가독성', 
+      before: safeBeforeAnalysis.readability || 0, 
+      after: safeAfterAnalysis.readability || 0 
+    },
+    { 
+      label: '전문성', 
+      before: safeBeforeAnalysis.professionalLevel || 0, 
+      after: safeAfterAnalysis.professionalLevel || 0 
+    },
+    { 
+      label: '명확성', 
+      before: safeBeforeAnalysis.clarity || 0, 
+      after: safeAfterAnalysis.clarity || 0 
+    },
   ];
 
   return (
@@ -60,8 +75,8 @@ const AnalysisIndicators = ({ result }) => {
 
 AnalysisIndicators.propTypes = {
   result: PropTypes.shape({
-    before_analysis: PropTypes.object.isRequired,
-    after_analysis: PropTypes.object.isRequired,
+    before_analysis: PropTypes.object,
+    after_analysis: PropTypes.object,
   }),
 };
 
