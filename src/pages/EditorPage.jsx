@@ -12,6 +12,8 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 export default function EditorPage() {
   const [text, setText] = useState('');
   const [purpose, setPurpose] = useState('general');
+  
+  // 기본값을 명시적으로 설정하여 undefined 방지
   const [options, setOptions] = useState({
     formality: 50,
     conciseness: 50,
@@ -21,6 +23,16 @@ export default function EditorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
+
+  // 안전한 options 변경 함수
+  const handleOptionsChange = (newOptions) => {
+    if (newOptions && typeof newOptions === 'object') {
+      setOptions(prevOptions => ({
+        ...prevOptions,
+        ...newOptions
+      }));
+    }
+  };
 
   const handleOptimize = async () => {
     if (!text.trim()) {
@@ -59,7 +71,7 @@ export default function EditorPage() {
             purpose={purpose}
             onPurposeChange={setPurpose}
             options={options}
-            onOptionsChange={setOptions}
+            onOptionsChange={handleOptionsChange}
           />
         </div>
 
