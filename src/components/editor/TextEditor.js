@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const TextEditor = ({ value, onChange }) => {
   return (
@@ -14,6 +15,11 @@ const TextEditor = ({ value, onChange }) => {
       </div>
     </div>
   );
+};
+
+TextEditor.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 
 export default TextEditor; 
