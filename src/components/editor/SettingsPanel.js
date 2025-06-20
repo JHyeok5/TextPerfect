@@ -37,16 +37,16 @@ const TERMINOLOGY_OPTIONS = [
   { value: 'advanced', label: '전문가', desc: '전문 용어 적극 활용' }
 ];
 
-const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange }) => {
+const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange, debugId = 'unknown' }) => {
   // 디버깅을 위한 useEffect
   useEffect(() => {
-    console.log('SettingsPanel props:', {
+    console.log(`🔍 SettingsPanel [${debugId}] rendered:`, {
       purpose,
       options,
       onPurposeChange: typeof onPurposeChange,
       onOptionsChange: typeof onOptionsChange
     });
-  }, [purpose, options, onPurposeChange, onOptionsChange]);
+  }, [purpose, options, onPurposeChange, onOptionsChange, debugId]);
 
   const safeOptions = {
     formality: 50,
@@ -56,57 +56,57 @@ const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange
   };
 
   const handleFormalityChange = (e) => {
-    console.log('handleFormalityChange triggered with value:', e.target.value);
+    console.log(`🎛️ [${debugId}] handleFormalityChange triggered with value:`, e.target.value);
     const newOptions = {
       ...safeOptions,
       formality: parseInt(e.target.value, 10)
     };
-    console.log('Calling onOptionsChange with:', newOptions);
+    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
     } else {
-      console.error('onOptionsChange is not a function:', onOptionsChange);
+      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handleConcisenessChange = (e) => {
-    console.log('handleConcisenessChange triggered with value:', e.target.value);
+    console.log(`🎛️ [${debugId}] handleConcisenessChange triggered with value:`, e.target.value);
     const newOptions = {
       ...safeOptions,
       conciseness: parseInt(e.target.value, 10)
     };
-    console.log('Calling onOptionsChange with:', newOptions);
+    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
     } else {
-      console.error('onOptionsChange is not a function:', onOptionsChange);
+      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handleTerminologyChange = (value) => {
-    console.log('handleTerminologyChange triggered with value:', value);
+    console.log(`🎛️ [${debugId}] handleTerminologyChange triggered with value:`, value);
     const newOptions = {
       ...safeOptions,
       terminology: value
     };
-    console.log('Calling onOptionsChange with:', newOptions);
+    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
     } else {
-      console.error('onOptionsChange is not a function:', onOptionsChange);
+      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handlePurposeClick = (purposeId) => {
-    console.log('handlePurposeClick triggered with:', purposeId);
+    console.log(`🎯 [${debugId}] handlePurposeClick triggered with:`, purposeId);
     
     if (typeof onPurposeChange === 'function') {
       onPurposeChange(purposeId);
     } else {
-      console.error('onPurposeChange is not a function:', onPurposeChange);
+      console.error(`❌ [${debugId}] onPurposeChange is not a function:`, onPurposeChange);
     }
   };
 
@@ -145,7 +145,12 @@ const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-debug={`settings-panel-${debugId}`}>
+      {/* 디버깅 정보 표시 */}
+      <div className="bg-yellow-100 border border-yellow-300 rounded p-2 text-xs">
+        🐛 DEBUG: SettingsPanel [{debugId}]
+      </div>
+      
       {/* 목적 선택 카드 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -306,7 +311,8 @@ SettingsPanel.propTypes = {
     terminology: PropTypes.oneOf(['basic', 'advanced'])
   }),
   onPurposeChange: PropTypes.func.isRequired,
-  onOptionsChange: PropTypes.func.isRequired
+  onOptionsChange: PropTypes.func.isRequired,
+  debugId: PropTypes.string
 };
 
 export default SettingsPanel; 
