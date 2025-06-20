@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 const PURPOSES = [
@@ -37,17 +37,7 @@ const TERMINOLOGY_OPTIONS = [
   { value: 'advanced', label: '전문가', desc: '전문 용어 적극 활용' }
 ];
 
-const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange, debugId = 'unknown' }) => {
-  // 디버깅을 위한 useEffect
-  useEffect(() => {
-    console.log(`🔍 SettingsPanel [${debugId}] rendered:`, {
-      purpose,
-      options,
-      onPurposeChange: typeof onPurposeChange,
-      onOptionsChange: typeof onOptionsChange
-    });
-  }, [purpose, options, onPurposeChange, onOptionsChange, debugId]);
-
+const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange }) => {
   const safeOptions = {
     formality: 50,
     conciseness: 50,
@@ -56,57 +46,41 @@ const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange
   };
 
   const handleFormalityChange = (e) => {
-    console.log(`🎛️ [${debugId}] handleFormalityChange triggered with value:`, e.target.value);
     const newOptions = {
       ...safeOptions,
       formality: parseInt(e.target.value, 10)
     };
-    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
-    } else {
-      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handleConcisenessChange = (e) => {
-    console.log(`🎛️ [${debugId}] handleConcisenessChange triggered with value:`, e.target.value);
     const newOptions = {
       ...safeOptions,
       conciseness: parseInt(e.target.value, 10)
     };
-    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
-    } else {
-      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handleTerminologyChange = (value) => {
-    console.log(`🎛️ [${debugId}] handleTerminologyChange triggered with value:`, value);
     const newOptions = {
       ...safeOptions,
       terminology: value
     };
-    console.log(`📤 [${debugId}] Calling onOptionsChange with:`, newOptions);
     
     if (typeof onOptionsChange === 'function') {
       onOptionsChange(newOptions);
-    } else {
-      console.error(`❌ [${debugId}] onOptionsChange is not a function:`, onOptionsChange);
     }
   };
 
   const handlePurposeClick = (purposeId) => {
-    console.log(`🎯 [${debugId}] handlePurposeClick triggered with:`, purposeId);
-    
     if (typeof onPurposeChange === 'function') {
       onPurposeChange(purposeId);
-    } else {
-      console.error(`❌ [${debugId}] onPurposeChange is not a function:`, onPurposeChange);
     }
   };
 
@@ -145,8 +119,7 @@ const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange
   };
 
   return (
-    <div className="space-y-6" data-debug={`settings-panel-${debugId}`}>
-
+    <div className="space-y-6">
       {/* 목적 선택 카드 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center gap-2 mb-4">
@@ -308,7 +281,6 @@ SettingsPanel.propTypes = {
   }),
   onPurposeChange: PropTypes.func.isRequired,
   onOptionsChange: PropTypes.func.isRequired,
-  debugId: PropTypes.string
 };
 
 export default SettingsPanel; 

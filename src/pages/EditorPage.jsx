@@ -127,7 +127,6 @@ export default function EditorPage() {
                     onPurposeChange={handlePurposeChange}
                     options={options || { formality: 50, conciseness: 50, terminology: 'basic' }}
                     onOptionsChange={handleOptionsChange}
-                    debugId="SETTINGS-PANEL"
                   />
                 </div>
               </div>

@@ -1,10 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import EditorSidebar from '../../pages/EditorPage/EditorSidebar';
 
 // 나중에 페이지가 추가되면 여기에 사이드바 컴포넌트를 매핑합니다.
 const sidebarConfig = {
-  '/editor': EditorSidebar,
+  // '/editor': EditorSidebar, // 제거 - EditorPage에서 자체적으로 관리
 };
 
 export default function Sidebar() {
