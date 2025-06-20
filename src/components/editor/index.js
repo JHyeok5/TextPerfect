@@ -1,5 +1,3 @@
-import { lazy } from 'react';
-
-export const TextEditor = lazy(() => import('./TextEditor'));
-export const AnalysisIndicators = lazy(() => import('./AnalysisIndicators'));
-export const SettingsPanel = lazy(() => import('./SettingsPanel')); 
+export { default as TextEditor } from './TextEditor';
+export { default as AnalysisIndicators } from './AnalysisIndicators';
+export { default as SettingsPanel } from './SettingsPanel'; 
