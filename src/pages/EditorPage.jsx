@@ -22,7 +22,7 @@ export default function EditorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showMobileSettings, setShowMobileSettings] = useState(false);
 
   // 안전한 함수 래퍼
   const handlePurposeChange = (newPurpose) => {
@@ -80,18 +80,19 @@ export default function EditorPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-800">텍스트 에디터</h1>
-            <p className="text-sm text-gray-600">텍스트를 입력하고 설정을 조정하세요</p>
+            <p className="text-sm text-gray-600 hidden md:block">왼쪽 설정을 조정하고 텍스트를 입력하세요</p>
+            <p className="text-sm text-gray-600 md:hidden">텍스트를 입력하고 아래 설정을 조정하세요</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {/* 설정 토글 버튼 - 모든 화면 크기에서 사용 */}
+          {/* 모바일용 설정 토글 버튼 - md 미만에서만 표시 */}
           <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            onClick={() => setShowMobileSettings(!showMobileSettings)}
+            className="md:hidden px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
           >
             <span>⚙️</span>
             <span>설정</span>
-            <span className="text-gray-400">{showSettings ? '▲' : '▼'}</span>
+            <span className="text-gray-400">{showMobileSettings ? '▲' : '▼'}</span>
           </button>
           <Button 
             onClick={handleOptimize} 
@@ -115,9 +116,9 @@ export default function EditorPage() {
       </div>
 
       <div className="space-y-6">
-        {/* 접이식 설정 패널 - 모든 화면 크기에서 동일하게 작동 */}
-        {showSettings && (
-          <div className="border-b pb-6 mb-6">
+        {/* 모바일용 접이식 설정 패널 - md 미만에서만 표시 */}
+        {showMobileSettings && (
+          <div className="md:hidden border-b pb-6 mb-6">
             <div className="bg-gray-50 rounded-lg p-4">
               <EditorSidebar
                 purpose={purpose || 'general'}
