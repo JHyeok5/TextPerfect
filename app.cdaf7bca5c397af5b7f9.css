@@ -2115,6 +2115,10 @@ select {
     display: flex;
   }
 
+  .md\:hidden {
+    display: none;
+  }
+
   .md\:max-w-3xl {
     max-width: 48rem;
   }
