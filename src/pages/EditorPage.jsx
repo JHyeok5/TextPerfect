@@ -3,11 +3,11 @@ import { toast } from 'react-toastify';
 
 import { TextEditor, AnalysisIndicators } from '../components/editor';
 import { Button, LoadingSpinner } from '../components/common';
+import Header from '../components/layout/Header';
 import EditorSidebar from './EditorPage/EditorSidebar';
 import { apiRequest } from '../utils/api';
 import { API_ENDPOINTS } from '../constants';
 import { useTextContext } from '../contexts/TextContext';
-
 
 export default function EditorPage() {
   // TextContext에서 상태 가져오기 (중복 제거)
@@ -73,6 +73,9 @@ export default function EditorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* 헤더 추가 */}
+      <Header />
+      
       <div className="max-w-5xl mx-auto p-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           {/* 헤더 */}
