@@ -146,11 +146,7 @@ const SettingsPanel = ({ purpose, options = {}, onPurposeChange, onOptionsChange
 
   return (
     <div className="space-y-6" data-debug={`settings-panel-${debugId}`}>
-      {/* 디버깅 정보 표시 */}
-      <div className="bg-yellow-100 border border-yellow-300 rounded p-2 text-xs">
-        🐛 DEBUG: SettingsPanel [{debugId}]
-      </div>
-      
+
       {/* 목적 선택 카드 */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center gap-2 mb-4">
