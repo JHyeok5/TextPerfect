@@ -4,6 +4,12 @@
  */
 
 exports.handler = async (event, context) => {
+  console.log('Function called:', {
+    method: event.httpMethod,
+    path: event.path,
+    body: event.body ? 'Body present' : 'No body'
+  });
+
   // CORS 헤더 설정
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -14,6 +20,7 @@ exports.handler = async (event, context) => {
 
   // OPTIONS 요청 처리 (CORS preflight)
   if (event.httpMethod === 'OPTIONS') {
+    console.log('OPTIONS request handled');
     return {
       statusCode: 200,
       headers,
@@ -23,10 +30,12 @@ exports.handler = async (event, context) => {
 
   // POST 요청만 허용
   if (event.httpMethod !== 'POST') {
+    console.log('Method not allowed:', event.httpMethod);
     return {
       statusCode: 405,
       headers,
       body: JSON.stringify({
+        success: false,
         code: 'METHOD_NOT_ALLOWED',
         message: 'POST 요청만 허용됩니다.',
         status: 405
@@ -35,15 +44,20 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('Processing POST request...');
+    
     // 요청 데이터 파싱
     let requestData;
     try {
       requestData = JSON.parse(event.body || '{}');
+      console.log('Request data parsed:', Object.keys(requestData));
     } catch (parseError) {
+      console.error('JSON parse error:', parseError);
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
+          success: false,
           code: 'INVALID_JSON',
           message: '잘못된 JSON 형식입니다.',
           status: 400
@@ -55,10 +69,12 @@ exports.handler = async (event, context) => {
 
     // 기본 검증
     if (!nickname || !email || !password) {
+      console.log('Validation failed: missing fields');
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
+          success: false,
           code: 'VALIDATION_ERROR',
           message: '닉네임, 이메일, 비밀번호를 모두 입력해주세요.',
           status: 400
@@ -69,10 +85,12 @@ exports.handler = async (event, context) => {
     // 간단한 이메일 형식 검증
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      console.log('Email validation failed');
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({
+          success: false,
           code: 'INVALID_EMAIL',
           message: '올바른 이메일 형식이 아닙니다.',
           status: 400
@@ -80,25 +98,10 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // 환경 변수 확인
-    const requiredEnvVars = ['GITHUB_TOKEN', 'JWT_SECRET'];
-    for (const envVar of requiredEnvVars) {
-      if (!process.env[envVar]) {
-        console.error(`Missing environment variable: ${envVar}`);
-        return {
-          statusCode: 500,
-          headers,
-          body: JSON.stringify({
-            code: 'CONFIG_ERROR',
-            message: '서버 설정 오류가 발생했습니다.',
-            status: 500
-          })
-        };
-      }
-    }
+    console.log('All validations passed, creating response...');
 
     // 성공 응답 (실제 저장은 나중에 구현)
-    return {
+    const response = {
       statusCode: 200,
       headers,
       body: JSON.stringify({
@@ -115,6 +118,9 @@ exports.handler = async (event, context) => {
       })
     };
 
+    console.log('Sending success response');
+    return response;
+
   } catch (err) {
     console.error('Signup error:', err);
     
@@ -122,6 +128,7 @@ exports.handler = async (event, context) => {
       statusCode: 500,
       headers,
       body: JSON.stringify({
+        success: false,
         code: 'INTERNAL_ERROR',
         message: '서버 내부 오류가 발생했습니다.',
         status: 500

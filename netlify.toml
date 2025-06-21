@@ -5,6 +5,7 @@
 
 [functions]
   node_bundler = "esbuild"
+  external_node_modules = ["aws-sdk"]
 
 [dev]
   command = "npm start"
