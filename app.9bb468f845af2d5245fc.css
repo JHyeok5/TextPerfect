@@ -1703,6 +1703,10 @@ select {
   font-size: 2.25rem;
   line-height: 2.5rem;
 }
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
+}
 .text-9xl {
   font-size: 8rem;
   line-height: 1;
@@ -2049,6 +2053,10 @@ select {
 .hover\:text-blue-800:hover {
   --tw-text-opacity: 1;
   color: rgb(30 64 175 / var(--tw-text-opacity, 1));
+}
+.hover\:text-gray-500:hover {
+  --tw-text-opacity: 1;
+  color: rgb(107 114 128 / var(--tw-text-opacity, 1));
 }
 .hover\:text-gray-700:hover {
   --tw-text-opacity: 1;
