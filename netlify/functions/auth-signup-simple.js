@@ -4,10 +4,12 @@
  */
 
 exports.handler = async (event, context) => {
+  console.log('🚀 AUTH-SIGNUP-SIMPLE FUNCTION CALLED!');
   console.log('Function called:', {
     method: event.httpMethod,
     path: event.path,
-    body: event.body ? 'Body present' : 'No body'
+    body: event.body ? 'Body present' : 'No body',
+    timestamp: new Date().toISOString()
   });
 
   // CORS 헤더 설정
@@ -20,7 +22,7 @@ exports.handler = async (event, context) => {
 
   // OPTIONS 요청 처리 (CORS preflight)
   if (event.httpMethod === 'OPTIONS') {
-    console.log('OPTIONS request handled');
+    console.log('✅ OPTIONS request handled');
     return {
       statusCode: 200,
       headers,
@@ -30,7 +32,7 @@ exports.handler = async (event, context) => {
 
   // POST 요청만 허용
   if (event.httpMethod !== 'POST') {
-    console.log('Method not allowed:', event.httpMethod);
+    console.log('❌ Method not allowed:', event.httpMethod);
     return {
       statusCode: 405,
       headers,
@@ -38,21 +40,25 @@ exports.handler = async (event, context) => {
         success: false,
         code: 'METHOD_NOT_ALLOWED',
         message: 'POST 요청만 허용됩니다.',
-        status: 405
+        status: 405,
+        debug: {
+          receivedMethod: event.httpMethod,
+          timestamp: new Date().toISOString()
+        }
       })
     };
   }
 
   try {
-    console.log('Processing POST request...');
+    console.log('✅ Processing POST request...');
     
     // 요청 데이터 파싱
     let requestData;
     try {
       requestData = JSON.parse(event.body || '{}');
-      console.log('Request data parsed:', Object.keys(requestData));
+      console.log('✅ Request data parsed:', Object.keys(requestData));
     } catch (parseError) {
-      console.error('JSON parse error:', parseError);
+      console.error('❌ JSON parse error:', parseError);
       return {
         statusCode: 400,
         headers,
@@ -69,7 +75,7 @@ exports.handler = async (event, context) => {
 
     // 기본 검증
     if (!nickname || !email || !password) {
-      console.log('Validation failed: missing fields');
+      console.log('❌ Validation failed: missing fields');
       return {
         statusCode: 400,
         headers,
@@ -85,7 +91,7 @@ exports.handler = async (event, context) => {
     // 간단한 이메일 형식 검증
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      console.log('Email validation failed');
+      console.log('❌ Email validation failed');
       return {
         statusCode: 400,
         headers,
@@ -98,7 +104,7 @@ exports.handler = async (event, context) => {
       };
     }
 
-    console.log('All validations passed, creating response...');
+    console.log('✅ All validations passed, creating response...');
 
     // 성공 응답 (실제 저장은 나중에 구현)
     const response = {
@@ -106,7 +112,7 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: true,
-        message: '회원가입 요청이 성공적으로 처리되었습니다.',
+        message: '🎉 회원가입 요청이 성공적으로 처리되었습니다!',
         data: {
           user: {
             nickname: nickname,
@@ -114,15 +120,19 @@ exports.handler = async (event, context) => {
             id: 'temp_' + Date.now()
           },
           token: 'temp_token_' + Date.now()
+        },
+        debug: {
+          functionCalled: true,
+          timestamp: new Date().toISOString()
         }
       })
     };
 
-    console.log('Sending success response');
+    console.log('✅ Sending success response');
     return response;
 
   } catch (err) {
-    console.error('Signup error:', err);
+    console.error('❌ Signup error:', err);
     
     return {
       statusCode: 500,
@@ -131,7 +141,11 @@ exports.handler = async (event, context) => {
         success: false,
         code: 'INTERNAL_ERROR',
         message: '서버 내부 오류가 발생했습니다.',
-        status: 500
+        status: 500,
+        debug: {
+          error: err.message,
+          timestamp: new Date().toISOString()
+        }
       })
     };
   }
