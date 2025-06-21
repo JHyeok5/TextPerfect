@@ -4,12 +4,7 @@ import { useUser } from '../../contexts/UserContext';
 import { ProgressBar, Button, Modal } from '../common';
 import { LoginForm, SignupForm } from '../auth';
 
-// 실제 로그인 기능 구현 전 사용할 더미 유저 정보
-const dummyUser = {
-  nickname: '테스트 유저',
-  level: 5,
-  exp: 450,
-};
+// 더미 유저 정보 제거 (실제 인증 시스템 구현 완료)
 
 export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();

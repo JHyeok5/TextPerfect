@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '../common';
-// import { useUser } from '../../contexts/UserContext';
+import { useUser } from '../../contexts/UserContext';
+import { signupUser } from '../../utils/api';
 
 export default function SignupForm({ onClose, onSwitchToLogin }) {
   const [nickname, setNickname] = useState('');
@@ -8,23 +9,53 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState('');
-  // const { login } = useUser();
+  const [loading, setLoading] = useState(false);
+  const { login } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
+    // 비밀번호 확인 체크
     if (password !== passwordConfirm) {
       setError('비밀번호가 일치하지 않습니다.');
+      setLoading(false);
       return;
     }
 
-    // TODO: 실제 API 연동 회원가입 로직
-    console.log('회원가입 시도:', { nickname, email });
-    // 가입 성공 시, 자동 로그인 처리 및 모달 닫기
-    // const newUser = { nickname, level: 1, exp: 0 };
-    // login(newUser);
-    if(onClose) onClose();
+    try {
+      // 실제 API 호출
+      const result = await signupUser({ 
+        nickname, 
+        email, 
+        password,
+        passwordConfirm 
+      });
+      
+      if (result.success) {
+        // 토큰 저장
+        localStorage.setItem('authToken', result.data.token);
+        
+        // 가입 성공 시, 자동 로그인 처리
+        login(result.data.user);
+        
+        // 모달 닫기
+        if (onClose) onClose();
+      } else {
+        // 서버에서 반환한 에러 메시지 표시
+        if (result.details && Array.isArray(result.details)) {
+          setError(result.details.join(' '));
+        } else {
+          setError(result.message || '회원가입에 실패했습니다.');
+        }
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError(err.message || '회원가입 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,8 +110,8 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
         />
       </div>
       
-      <Button type="submit" variant="primary" className="w-full">
-        가입하기
+      <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+        {loading ? '가입 중...' : '가입하기'}
       </Button>
 
       <div className="text-sm text-center">

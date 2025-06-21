@@ -1,31 +1,41 @@
 import React, { useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { Button } from '../common';
-
-// 로그인 기능 구현 전 사용할 더미 유저 정보
-const dummyUser = {
-  nickname: '진짜 유저',
-  level: 10,
-  exp: 150,
-};
+import { loginUser } from '../../utils/api';
 
 export default function LoginForm({ onClose, onSwitchToSignup }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    // TODO: 실제 API 연동 로그인 로직으로 교체 필요
-    if (email === 'test@test.com' && password === 'password') {
-      console.log('로그인 성공:', { email });
-      login(dummyUser); // UserContext를 통해 로그인 상태 업데이트
-      if(onClose) onClose(); // 모달 닫기
-    } else {
-      setError('이메일 또는 비밀번호가 올바르지 않습니다.');
+    try {
+      // 실제 API 호출
+      const result = await loginUser({ email, password });
+      
+      if (result.success) {
+        // 토큰 저장
+        localStorage.setItem('authToken', result.data.token);
+        
+        // UserContext를 통해 로그인 상태 업데이트
+        login(result.data.user);
+        
+        // 모달 닫기
+        if (onClose) onClose();
+      } else {
+        setError(result.message || '로그인에 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || '로그인 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,8 +76,8 @@ export default function LoginForm({ onClose, onSwitchToSignup }) {
         </div>
       </div>
       
-      <Button type="submit" variant="primary" className="w-full">
-        로그인
+      <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+        {loading ? '로그인 중...' : '로그인'}
       </Button>
       
       <div className="relative my-4">

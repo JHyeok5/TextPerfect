@@ -30,15 +30,18 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/forms": "^0.5.7",
     "axios": "^1.6.7",
+    "bcryptjs": "^3.0.2",
     "classnames": "^2.5.1",
     "core-js": "^3.33.3",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
     "react-toastify": "^11.0.5",
-    "regenerator-runtime": "^0.14.0"
+    "regenerator-runtime": "^0.14.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",

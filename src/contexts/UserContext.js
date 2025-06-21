@@ -38,24 +38,47 @@ export function UserProvider({ children }) {
   const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true); // 앱 로딩 시 인증 상태 확인 중
 
-  // TODO: 앱 시작 시 토큰 등으로 로그인 상태 복원 로직 추가
+  // 앱 시작 시 토큰으로 로그인 상태 복원
   useEffect(() => {
-    // 예시: localStorage에서 토큰을 확인하고 유효하다면 사용자 정보 가져오기
-    // const token = localStorage.getItem('authToken');
-    // if (token) {
-    //   // fetchUserProfile().then(userData => setUser(userData));
-    // }
-    setLoading(false); // 로딩 완료
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          // validateAndRefreshAuth를 동적으로 import (순환 참조 방지)
+          const { validateAndRefreshAuth } = await import('../utils/api');
+          const userData = await validateAndRefreshAuth();
+          if (userData) {
+            setUser(userData);
+          }
+        } catch (error) {
+          console.error('Auto login failed:', error);
+          // 토큰이 무효하면 제거
+          localStorage.removeItem('authToken');
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    // TODO: localStorage.setItem('authToken', userData.token);
+    // 토큰은 API 호출 시 이미 저장됨
   };
 
-  const logout = () => {
-    setUser(null);
-    // TODO: localStorage.removeItem('authToken');
+  const logout = async () => {
+    try {
+      // logoutUser를 동적으로 import (순환 참조 방지)
+      const { logoutUser } = await import('../utils/api');
+      await logoutUser();
+    } catch (error) {
+      console.error('Logout API failed:', error);
+      // API 실패해도 로컬 상태는 정리
+    } finally {
+      setUser(null);
+      localStorage.removeItem('authToken');
+    }
   };
 
   const value = {

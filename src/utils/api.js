@@ -101,4 +101,90 @@ export function useApiRequest() {
   }, []);
 
   return { data, loading, error, request };
+}
+
+// 인증 관련 API 함수들
+
+/**
+ * 회원가입 API 호출
+ */
+export async function signupUser(userData) {
+  return await apiRequest('/.netlify/functions/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify(userData)
+  });
+}
+
+/**
+ * 로그인 API 호출
+ */
+export async function loginUser(credentials) {
+  return await apiRequest('/.netlify/functions/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials)
+  });
+}
+
+/**
+ * 현재 사용자 정보 조회
+ */
+export async function getCurrentUser() {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    throw new Error('인증 토큰이 없습니다.');
+  }
+
+  return await apiRequest('/.netlify/functions/auth/me', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+}
+
+/**
+ * 로그아웃 API 호출
+ */
+export async function logoutUser() {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    return { success: true, message: '이미 로그아웃된 상태입니다.' };
+  }
+
+  try {
+    const result = await apiRequest('/.netlify/functions/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    // 로컬 스토리지에서 토큰 제거
+    localStorage.removeItem('authToken');
+    
+    return result;
+  } catch (error) {
+    // 로그아웃 실패해도 로컬 토큰은 제거
+    localStorage.removeItem('authToken');
+    throw error;
+  }
+}
+
+/**
+ * 토큰 유효성 검증 및 자동 로그인
+ */
+export async function validateAndRefreshAuth() {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const result = await getCurrentUser();
+    return result.data.user;
+  } catch (error) {
+    // 토큰이 무효하면 제거
+    localStorage.removeItem('authToken');
+    return null;
+  }
 } 
