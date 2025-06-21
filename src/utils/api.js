@@ -143,7 +143,7 @@ export function useApiRequest() {
  * 회원가입 API 호출
  */
 export async function signupUser(userData) {
-  return await apiRequest('/.netlify/functions/auth-signup', {
+  return await apiRequest('/.netlify/functions/auth-signup-simple', {
     method: 'POST',
     body: JSON.stringify(userData)
   });
