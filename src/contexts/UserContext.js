@@ -80,6 +80,7 @@ export function UserProvider({ children }) {
   const [subscription, setSubscription] = useState(defaultSubscription);
   const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const [dailyUsage, setDailyUsage] = useState(0);
   const [monthlyDocs, setMonthlyDocs] = useState(0);
 
@@ -119,6 +120,7 @@ export function UserProvider({ children }) {
   useEffect(() => {
     const initializeAuth = async () => {
       logDebug('UserContext: Initializing auth...');
+      setLoading(true);
       const token = localStorage.getItem('authToken');
       logDebug('UserContext: Found token:', !!token);
       
@@ -131,8 +133,13 @@ export function UserProvider({ children }) {
           if (userData) {
             logDebug('UserContext: Auto login successful:', userData);
             setUser(userData);
+            // 사용자 구독 정보 설정
+            if (userData.subscription) {
+              setSubscription(userData.subscription);
+            }
           } else {
             logDebug('UserContext: Token validation failed');
+            localStorage.removeItem('authToken');
           }
         } catch (error) {
           logError('UserContext: Auto login failed:', error);
@@ -140,7 +147,9 @@ export function UserProvider({ children }) {
           localStorage.removeItem('authToken');
         }
       }
+      
       setLoading(false);
+      setAuthInitialized(true);
       logDebug('UserContext: Auth initialization complete');
     };
 
@@ -150,6 +159,10 @@ export function UserProvider({ children }) {
   const login = (userData) => {
     logDebug('UserContext login called with:', userData);
     setUser(userData);
+    // 사용자 구독 정보 설정
+    if (userData.subscription) {
+      setSubscription(userData.subscription);
+    }
     // 토큰은 API 호출 시 이미 저장됨
   };
 
@@ -163,6 +176,7 @@ export function UserProvider({ children }) {
       // API 실패해도 로컬 상태는 정리
     } finally {
       setUser(null);
+      setSubscription(defaultSubscription);
       localStorage.removeItem('authToken');
     }
   };
@@ -256,6 +270,7 @@ export function UserProvider({ children }) {
     settings,
     setSettings,
     loading,
+    authInitialized,
     // 사용량 관리
     dailyUsage,
     canUseCharacters,
@@ -276,7 +291,7 @@ export function UserProvider({ children }) {
 
   return (
     <UserContext.Provider value={value}>
-      {!loading && children}
+      {authInitialized && children}
     </UserContext.Provider>
   );
 }

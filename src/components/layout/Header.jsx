@@ -12,10 +12,16 @@ const logDebug = (...args) => {
   }
 };
 
-// 더미 유저 정보 제거 (실제 인증 시스템 구현 완료)
+// 스켈레톤 로딩 컴포넌트
+const UserInfoSkeleton = () => (
+  <div className="hidden md:block text-sm text-gray-600 text-right animate-pulse">
+    <div className="h-4 bg-gray-300 rounded w-24 mb-1"></div>
+    <div className="h-2 bg-gray-300 rounded w-20"></div>
+  </div>
+);
 
 export default function Header() {
-  const { user, isAuthenticated, login, logout } = useUser();
+  const { user, isAuthenticated, loading, login, logout } = useUser();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
@@ -67,11 +73,17 @@ export default function Header() {
       <div className="flex items-center gap-4">
         <PWAInstallButton className="hidden sm:flex" />
         
-        {isAuthenticated && user ? (
+        {loading ? (
+          // 로딩 중일 때 스켈레톤 UI 표시
+          <div className="flex items-center gap-4">
+            <UserInfoSkeleton />
+            <div className="w-8 h-8 bg-gray-300 rounded-full animate-pulse"></div>
+          </div>
+        ) : isAuthenticated && user ? (
           <>
             <div className="hidden md:block text-sm text-gray-600 text-right">
-              <div>Lv.{user.level} <span className="font-semibold">{user.nickname}</span></div>
-              <ProgressBar value={user.exp} max={1000} />
+              <div>Lv.{user.level || 1} <span className="font-semibold">{user.nickname || '사용자'}</span></div>
+              <ProgressBar value={user.exp || 0} max={1000} />
             </div>
             <div className="relative group">
               <button className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 transition">
@@ -81,8 +93,8 @@ export default function Header() {
               </button>
               <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 py-1">
                 <div className="px-4 py-2 border-b">
-                  <p className="font-bold">{user.nickname}</p>
-                  <p className="text-sm text-gray-500">Lv.{user.level}</p>
+                  <p className="font-bold">{user.nickname || '사용자'}</p>
+                  <p className="text-sm text-gray-500">Lv.{user.level || 1}</p>
                 </div>
                 <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">프로필</Link>
                 <Link to="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">분석 히스토리</Link>

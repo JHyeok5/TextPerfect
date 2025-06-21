@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Octokit } = require('@octokit/rest');
 const { 
   createSuccessResponse, 
   createErrorResponse, 
@@ -8,79 +9,158 @@ const {
 } = require('./utils/response');
 const { getUserHistory } = require('./utils/github-storage');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GITHUB_OWNER = process.env.GITHUB_OWNER;
+const GITHUB_REPO = process.env.GITHUB_REPO;
+
+// GitHub 클라이언트 초기화
+const octokit = new Octokit({
+  auth: GITHUB_TOKEN,
+});
+
+// JWT 토큰 검증
+const verifyToken = (token) => {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
+};
+
+// 분석 히스토리 조회
+const getAnalysisHistory = async (userId, page = 1, limit = 10) => {
+  try {
+    const path = `users/${userId}/analyses.json`;
+    
+    try {
+      const { data: fileData } = await octokit.rest.repos.getContent({
+        owner: GITHUB_OWNER,
+        repo: GITHUB_REPO,
+        path: path,
+      });
+
+      const content = Buffer.from(fileData.content, 'base64').toString('utf8');
+      const analyses = JSON.parse(content);
+
+      // 날짜순으로 정렬 (최신순)
+      const sortedAnalyses = analyses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // 페이지네이션
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedAnalyses = sortedAnalyses.slice(startIndex, endIndex);
+
+      const totalPages = Math.ceil(sortedAnalyses.length / limit);
+
+      return {
+        analyses: paginatedAnalyses,
+        currentPage: page,
+        totalPages,
+        totalCount: sortedAnalyses.length
+      };
+    } catch (error) {
+      if (error.status === 404) {
+        // 파일이 없으면 빈 배열 반환
+        return {
+          analyses: [],
+          currentPage: 1,
+          totalPages: 1,
+          totalCount: 0
+        };
+      }
+      throw error;
+    }
+  } catch (error) {
+    console.error('분석 히스토리 조회 실패:', error);
+    throw new Error('분석 히스토리를 불러오는데 실패했습니다.');
+  }
+};
+
 exports.handler = async (event, context) => {
-  // CORS 처리
+  // CORS 헤더
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  };
+
+  // OPTIONS 요청 처리
   if (event.httpMethod === 'OPTIONS') {
-    return createCorsResponse();
+    return {
+      statusCode: 200,
+      headers,
+      body: '',
+    };
   }
 
+  // GET 요청만 허용
   if (event.httpMethod !== 'GET') {
-    return createErrorResponse('GET method required', 405);
+    return {
+      statusCode: 405,
+      headers,
+      body: JSON.stringify({ 
+        success: false, 
+        message: 'Method not allowed' 
+      }),
+    };
   }
 
   try {
-    // JWT 토큰 검증
+    // Authorization 헤더에서 토큰 추출
     const authHeader = event.headers.authorization || event.headers.Authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return createErrorResponse('인증 토큰이 필요합니다.', 401);
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          success: false, 
+          message: '인증 토큰이 필요합니다.' 
+        }),
+      };
     }
 
-    const token = authHeader.substring(7);
-    let decoded;
-    
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return createErrorResponse('유효하지 않은 토큰입니다.', 401);
+    const token = authHeader.split(' ')[1];
+    const decoded = verifyToken(token);
+
+    if (!decoded) {
+      return {
+        statusCode: 401,
+        headers,
+        body: JSON.stringify({ 
+          success: false, 
+          message: '유효하지 않은 토큰입니다.' 
+        }),
+      };
     }
 
-    const userId = decoded.userId;
-    logDebug('Getting analysis history for user:', userId);
+    // 쿼리 파라미터에서 페이지 정보 추출
+    const queryParams = event.queryStringParameters || {};
+    const page = parseInt(queryParams.page) || 1;
+    const limit = parseInt(queryParams.limit) || 10;
 
-    // 쿼리 파라미터 파싱
-    const params = event.queryStringParameters || {};
-    const page = parseInt(params.page) || 1;
-    const limit = Math.min(parseInt(params.limit) || 10, 50); // 최대 50개
-    const search = params.search || '';
-    const tags = params.tags ? params.tags.split(',').filter(Boolean) : [];
+    // 분석 히스토리 조회
+    const historyData = await getAnalysisHistory(decoded.userId, page, limit);
 
-    logDebug('Query parameters:', { page, limit, search, tags });
-
-    // 히스토리 조회
-    const result = await getUserHistory(userId, {
-      page,
-      limit,
-      search,
-      tags
-    });
-
-    // 민감한 정보 제거 (필요시)
-    const sanitizedData = result.data.map(item => ({
-      id: item.id,
-      originalText: item.originalText.substring(0, 200) + (item.originalText.length > 200 ? '...' : ''),
-      optimizedText: item.optimizedText.substring(0, 200) + (item.optimizedText.length > 200 ? '...' : ''),
-      analysis: {
-        readability: item.analysis.readability,
-        clarity: item.analysis.clarity,
-        professionalism: item.analysis.professionalism,
-        improvements: item.analysis.improvements?.slice(0, 3) // 상위 3개만
-      },
-      purpose: item.purpose,
-      tags: item.tags,
-      timestamp: item.timestamp,
-      textLength: item.textLength,
-      improvementScore: item.improvementScore
-    }));
-
-    logDebug('History retrieved successfully:', result.pagination);
-
-    return createSuccessResponse({
-      history: sanitizedData,
-      pagination: result.pagination
-    });
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        data: historyData
+      }),
+    };
 
   } catch (error) {
-    logError('Error in get-analysis-history:', error);
-    return createErrorResponse(error.message, 500);
+    console.error('분석 히스토리 조회 에러:', error);
+
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        message: error.message || '서버 오류가 발생했습니다.'
+      }),
+    };
   }
 }; 

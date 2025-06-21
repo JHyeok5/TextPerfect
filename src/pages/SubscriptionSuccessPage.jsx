@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Layout } from '../components/layout/Layout';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import Layout from '../components/layout/Layout';
+import { Card, Button, LoadingSpinner } from '../components/common';
 import { useUser } from '../contexts/UserContext';
 import { verifyCheckoutSession } from '../utils/stripe';
 import { toast } from 'react-toastify';

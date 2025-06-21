@@ -100,6 +100,39 @@ export const verifyCheckoutSession = async (sessionId) => {
   }
 };
 
+// 구독 취소
+export const cancelSubscription = async (subscriptionId, cancelImmediately = false) => {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('인증 토큰이 없습니다.');
+    }
+
+    const response = await fetch('/.netlify/functions/stripe-cancel-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        subscriptionId,
+        cancelImmediately,
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to cancel subscription');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Cancel subscription error:', error);
+    throw error;
+  }
+};
+
 // 플랜 정보
 export const STRIPE_PLANS = {
   PREMIUM_MONTHLY: {

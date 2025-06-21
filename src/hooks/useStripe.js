@@ -13,7 +13,7 @@ export const useStripe = () => {
   const [loading, setLoading] = useState(false);
   const [subscriptionData, setSubscriptionData] = useState(null);
 
-  // êµ¬ë… ìƒíƒœ ì¡°íšŒ
+  // ±¸µ¶ »óÅÂ Á¶È¸
   const fetchSubscriptionStatus = async () => {
     if (!isAuthenticated || !user?.email) return;
 
@@ -23,44 +23,44 @@ export const useStripe = () => {
       setSubscriptionData(data);
     } catch (error) {
       console.error('Failed to fetch subscription status:', error);
-      toast.error('êµ¬ë… ìƒíƒœë¥¼ ì¡°íšŒí•˜ëŠ”ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.');
+      toast.error('±¸µ¶ »óÅÂ¸¦ Á¶È¸ÇÏ´Âµ¥ ½ÇÆÐÇß½À´Ï´Ù.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ê²°ì œ ì‹œìž‘
+  // °áÁ¦ ½ÃÀÛ
   const startCheckout = async (planType) => {
     if (!isAuthenticated) {
-      toast.error('ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤.');
+      toast.error('·Î±×ÀÎÀÌ ÇÊ¿äÇÕ´Ï´Ù.');
       return;
     }
 
     if (!user?.id || !user?.email) {
-      toast.error('ì‚¬ìš©ìž ì •ë³´ê°€ ì—†ìŠµë‹ˆë‹¤.');
+      toast.error('»ç¿ëÀÚ Á¤º¸°¡ ¾ø½À´Ï´Ù.');
       return;
     }
 
     try {
       setLoading(true);
       
-      // ì²´í¬ì•„ì›ƒ ì„¸ì…˜ ìƒì„±
+      // Ã¼Å©¾Æ¿ô ¼¼¼Ç »ý¼º
       const { url } = await createCheckoutSession(planType, user.id, user.email);
       
-      // Stripe ì²´í¬ì•„ì›ƒ íŽ˜ì´ì§€ë¡œ ë¦¬ë””ë ‰ì…˜
+      // Stripe Ã¼Å©¾Æ¿ô ÆäÀÌÁö·Î ¸®µð·º¼Ç
       window.location.href = url;
       
     } catch (error) {
       console.error('Checkout failed:', error);
-      toast.error('ê²°ì œ íŽ˜ì´ì§€ë¡œ ì´ë™í•˜ëŠ”ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.');
+      toast.error('°áÁ¦ ÆäÀÌÁö·Î ÀÌµ¿ÇÏ´Âµ¥ ½ÇÆÐÇß½À´Ï´Ù.');
       setLoading(false);
     }
   };
 
-  // ê³ ê° í¬í„¸ ì—´ê¸°
+  // °í°´ Æ÷ÅÐ ¿­±â
   const openCustomerPortal = async () => {
     if (!isAuthenticated || !user?.email) {
-      toast.error('ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤.');
+      toast.error('·Î±×ÀÎÀÌ ÇÊ¿äÇÕ´Ï´Ù.');
       return;
     }
 
@@ -69,17 +69,17 @@ export const useStripe = () => {
       
       const { url } = await createCustomerPortalSession(user.email);
       
-      // ê³ ê° í¬í„¸ íŽ˜ì´ì§€ë¡œ ë¦¬ë””ë ‰ì…˜
+      // °í°´ Æ÷ÅÐ ÆäÀÌÁö·Î ¸®µð·º¼Ç
       window.location.href = url;
       
     } catch (error) {
       console.error('Customer portal failed:', error);
-      toast.error('êµ¬ë… ê´€ë¦¬ íŽ˜ì´ì§€ë¡œ ì´ë™í•˜ëŠ”ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.');
+      toast.error('±¸µ¶ °ü¸® ÆäÀÌÁö·Î ÀÌµ¿ÇÏ´Âµ¥ ½ÇÆÐÇß½À´Ï´Ù.');
       setLoading(false);
     }
   };
 
-  // ì‚¬ìš©ìž ë¡œê·¸ì¸ ì‹œ êµ¬ë… ìƒíƒœ ìžë™ ì¡°íšŒ
+  // »ç¿ëÀÚ ·Î±×ÀÎ ½Ã ±¸µ¶ »óÅÂ ÀÚµ¿ Á¶È¸
   useEffect(() => {
     if (isAuthenticated && user?.email) {
       fetchSubscriptionStatus();
@@ -95,4 +95,4 @@ export const useStripe = () => {
     isSubscribed: subscriptionData?.plan === 'PREMIUM',
     subscriptionStatus: subscriptionData?.status,
   };
-}; 
+};

@@ -1,13 +1,113 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Layout } from '../components/layout/Layout';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import Layout from '../components/layout/Layout';
+import { Card, Button, LoadingSpinner, Modal } from '../components/common';
 import { useUser } from '../contexts/UserContext';
 import { useStripe } from '../hooks/useStripe';
 import { STRIPE_PLANS } from '../utils/stripe';
 import { toast } from 'react-toastify';
+
+// 구독 취소 모달 컴포넌트
+const CancelSubscriptionModal = ({ isOpen, onClose, subscriptionData, onCancel }) => {
+  const [cancelImmediately, setCancelImmediately] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleCancel = async () => {
+    if (!subscriptionData?.subscription?.id) {
+      toast.error('구독 정보를 찾을 수 없습니다.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const success = await onCancel(subscriptionData.subscription.id, cancelImmediately);
+      if (success) {
+        onClose();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal open={isOpen} onClose={onClose} title="구독 취소">
+      <div className="space-y-4">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">
+                구독 취소 안내
+              </h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>구독을 취소하시면 프리미엄 기능을 더 이상 이용하실 수 없습니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center">
+            <input
+              id="cancel-period-end"
+              type="radio"
+              checked={!cancelImmediately}
+              onChange={() => setCancelImmediately(false)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+            />
+            <label htmlFor="cancel-period-end" className="ml-3 block text-sm font-medium text-gray-700">
+              현재 결제 기간 종료 시 취소
+              <p className="text-xs text-gray-500 mt-1">
+                {subscriptionData?.subscription?.currentPeriodEnd && 
+                  `${new Date(subscriptionData.subscription.currentPeriodEnd).toLocaleDateString('ko-KR')}까지 계속 이용 가능`
+                }
+              </p>
+            </label>
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              id="cancel-immediately"
+              type="radio"
+              checked={cancelImmediately}
+              onChange={() => setCancelImmediately(true)}
+              className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+            />
+            <label htmlFor="cancel-immediately" className="ml-3 block text-sm font-medium text-gray-700">
+              즉시 취소
+              <p className="text-xs text-gray-500 mt-1">
+                지금 즉시 구독이 취소되며 프리미엄 기능 이용이 중단됩니다.
+              </p>
+            </label>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1"
+          >
+            취소
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleCancel}
+            disabled={loading}
+            className="flex-1 bg-red-600 hover:bg-red-700"
+          >
+            {loading ? <LoadingSpinner size="sm" /> : '구독 취소'}
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
 
 const SubscriptionPage = () => {
   const [searchParams] = useSearchParams();
@@ -17,9 +117,11 @@ const SubscriptionPage = () => {
     subscriptionData, 
     startCheckout, 
     openCustomerPortal, 
+    cancelSubscriptionPlan,
     isSubscribed 
   } = useStripe();
   const [pageLoading, setPageLoading] = useState(true);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // URL 파라미터 확인 (결제 취소, 성공 등)
   useEffect(() => {
@@ -73,27 +175,56 @@ const SubscriptionPage = () => {
           </p>
           
           {isSubscribed && subscriptionData && (
-            <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-green-800">
-                🎉 현재 <strong>프리미엄 플랜</strong>을 이용중입니다!
-                {subscriptionData.subscription?.currentPeriodEnd && (
-                  <span className="ml-2">
-                    (다음 결제일: {new Date(subscriptionData.subscription.currentPeriodEnd).toLocaleDateString('ko-KR')})
-                  </span>
-                )}
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={openCustomerPortal}
-                disabled={loading}
-                className="mt-2"
-              >
-                구독 관리
-              </Button>
+            <div className="mt-6 p-6 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <p className="text-green-800 font-semibold">
+                    🎉 현재 <strong>프리미엄 플랜</strong>을 이용중입니다!
+                  </p>
+                  {subscriptionData.subscription?.currentPeriodEnd && (
+                    <p className="text-green-700 text-sm mt-1">
+                      다음 결제일: {new Date(subscriptionData.subscription.currentPeriodEnd).toLocaleDateString('ko-KR')}
+                    </p>
+                  )}
+                  {subscriptionData.subscription?.cancelAtPeriodEnd && (
+                    <p className="text-orange-600 text-sm mt-1 font-medium">
+                      ⚠️ 구독이 {new Date(subscriptionData.subscription.currentPeriodEnd).toLocaleDateString('ko-KR')}에 종료 예정입니다.
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={openCustomerPortal}
+                    disabled={loading}
+                  >
+                    구독 관리
+                  </Button>
+                  {!subscriptionData.subscription?.cancelAtPeriodEnd && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowCancelModal(true)}
+                      disabled={loading}
+                      className="border-red-300 text-red-600 hover:bg-red-50"
+                    >
+                      구독 취소
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
+
+        {/* 구독 취소 모달 */}
+        <CancelSubscriptionModal
+          isOpen={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          subscriptionData={subscriptionData}
+          onCancel={cancelSubscriptionPlan}
+        />
 
         {/* 요금제 비교표 */}
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
@@ -251,23 +382,23 @@ const SubscriptionPage = () => {
                   <td className="text-center py-4 px-6">100개</td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-6">AI 분석 품질</td>
-                  <td className="text-center py-4 px-6">기본</td>
+                  <td className="py-4 px-6">AI 분석 엔진</td>
+                  <td className="text-center py-4 px-6">기본 (Claude-3-Haiku)</td>
                   <td className="text-center py-4 px-6">고급 (Claude-3-Sonnet)</td>
                 </tr>
                 <tr>
                   <td className="py-4 px-6">템플릿</td>
                   <td className="text-center py-4 px-6">3개</td>
-                  <td className="text-center py-4 px-6">전체 (6개+)</td>
+                  <td className="text-center py-4 px-6">모든 템플릿</td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-6">AI 코치 과정</td>
-                  <td className="text-center py-4 px-6">기본 1개</td>
-                  <td className="text-center py-4 px-6">고급 3개 + 개인 맞춤</td>
+                  <td className="py-4 px-6">AI 코치</td>
+                  <td className="text-center py-4 px-6">기본 과정</td>
+                  <td className="text-center py-4 px-6">고급 과정</td>
                 </tr>
                 <tr>
-                  <td className="py-4 px-6">고객 지원</td>
-                  <td className="text-center py-4 px-6">일반</td>
+                  <td className="py-4 px-6">지원</td>
+                  <td className="text-center py-4 px-6">커뮤니티</td>
                   <td className="text-center py-4 px-6">우선 지원</td>
                 </tr>
               </tbody>
@@ -275,38 +406,38 @@ const SubscriptionPage = () => {
           </div>
         </div>
 
-        {/* FAQ */}
+        {/* FAQ 섹션 */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
             자주 묻는 질문
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-8">
             <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">언제든 취소할 수 있나요?</h3>
-              <p className="text-gray-600">
-                네, 언제든지 구독을 취소할 수 있습니다. 취소 후에도 현재 결제 기간이 끝날 때까지는 프리미엄 기능을 계속 이용하실 수 있습니다.
+              <h3 className="font-semibold text-gray-900 mb-2">언제든지 취소할 수 있나요?</h3>
+              <p className="text-gray-600 text-sm">
+                네, 언제든지 구독을 취소하실 수 있습니다. 취소 후에도 현재 결제 기간이 끝날 때까지는 프리미엄 기능을 계속 이용하실 수 있습니다.
               </p>
             </Card>
             
             <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">결제 수단은 무엇을 지원하나요?</h3>
-              <p className="text-gray-600">
-                신용카드, 체크카드를 지원합니다. 모든 결제는 Stripe를 통해 안전하게 처리됩니다.
-              </p>
-            </Card>
-            
-            <Card className="p-6">
-              <h3 className="font-semibold text-gray-900 mb-2">무료 체험이 있나요?</h3>
-              <p className="text-gray-600">
-                무료 플랜으로 먼저 서비스를 체험해보실 수 있습니다. 별도의 무료 체험 기간은 제공하지 않습니다.
+              <h3 className="font-semibold text-gray-900 mb-2">결제는 어떻게 이루어지나요?</h3>
+              <p className="text-gray-600 text-sm">
+                Stripe를 통해 안전하게 결제가 처리됩니다. 신용카드, 체크카드 등 다양한 결제 방법을 지원합니다.
               </p>
             </Card>
             
             <Card className="p-6">
               <h3 className="font-semibold text-gray-900 mb-2">환불 정책은 어떻게 되나요?</h3>
-              <p className="text-gray-600">
-                구독 후 7일 이내에 요청하시면 전액 환불해드립니다. 자세한 내용은 고객센터로 문의해주세요.
+              <p className="text-gray-600 text-sm">
+                구독 후 7일 이내에는 전액 환불이 가능합니다. 그 이후에는 남은 기간에 대해 비례 환불해드립니다.
+              </p>
+            </Card>
+            
+            <Card className="p-6">
+              <h3 className="font-semibold text-gray-900 mb-2">데이터는 안전하게 보관되나요?</h3>
+              <p className="text-gray-600 text-sm">
+                모든 데이터는 암호화되어 안전하게 저장됩니다. GDPR 및 개인정보보호법을 준수하여 운영됩니다.
               </p>
             </Card>
           </div>

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layout } from '../components/layout/Layout';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import Layout from '../components/layout/Layout';
+import { Card, Button, LoadingSpinner } from '../components/common';
 import { useUser } from '../contexts/UserContext';
 import { useStripe } from '../hooks/useStripe';
 
