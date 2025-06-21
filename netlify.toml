@@ -1,10 +1,10 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = ".netlify/functions"
+  functions = "./netlify/functions"
 
 [functions]
-  directory = ".netlify/functions"
+  directory = "./netlify/functions"
 
 # 보안 헤더 설정
 [[headers]]
