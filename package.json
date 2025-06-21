@@ -27,8 +27,10 @@
     "dev-server": "webpack serve --mode development",
     "watch": "webpack --mode development --watch",
     "check-deps": "depcheck",
+    "check-env": "node scripts/check-env.js",
     "functions:build": "echo 'Functions ready for deployment'",
-    "postbuild": "echo 'Build completed successfully'"
+    "postbuild": "echo 'Build completed successfully'",
+    "prebuild": "npm run check-env"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6",
