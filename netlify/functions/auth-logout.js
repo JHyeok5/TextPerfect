@@ -3,9 +3,9 @@
  * POST /.netlify/functions/auth/logout
  */
 
-const { authenticateRequest } = require('../utils/jwt');
-const { addToBlacklist } = require('../utils/github-storage');
-const { success, error } = require('../utils/response');
+const { authenticateRequest } = require('./utils/jwt');
+const { addToBlacklist } = require('./utils/github-storage');
+const { success, error } = require('./utils/response');
 
 exports.handler = async (event, context) => {
   // CORS 헤더 설정

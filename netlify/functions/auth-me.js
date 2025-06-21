@@ -3,9 +3,9 @@
  * GET /.netlify/functions/auth/me
  */
 
-const { authenticateRequest } = require('../utils/jwt');
-const { findUserById } = require('../utils/github-storage');
-const { success, error } = require('../utils/response');
+const { authenticateRequest } = require('./utils/jwt');
+const { findUserById } = require('./utils/github-storage');
+const { success, error } = require('./utils/response');
 
 exports.handler = async (event, context) => {
   // CORS 헤더 설정

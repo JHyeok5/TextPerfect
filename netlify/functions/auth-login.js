@@ -3,12 +3,12 @@
  * POST /.netlify/functions/auth/login
  */
 
-const { validateLoginData } = require('../utils/validation');
-const { comparePassword } = require('../utils/password');
-const { findUserByEmail, updateLastLogin, updateStats } = require('../utils/github-storage');
-const { generateToken } = require('../utils/jwt');
-const { rateLimit } = require('../utils/auth');
-const { success, error } = require('../utils/response');
+const { validateLoginData } = require('./utils/validation');
+const { comparePassword } = require('./utils/password');
+const { findUserByEmail, updateLastLogin, updateStats } = require('./utils/github-storage');
+const { generateToken } = require('./utils/jwt');
+const { rateLimit } = require('./utils/auth');
+const { success, error } = require('./utils/response');
 
 exports.handler = async (event, context) => {
   // CORS 헤더 설정
