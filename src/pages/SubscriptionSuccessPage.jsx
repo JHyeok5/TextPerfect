@@ -1,210 +1,208 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import Layout from '../components/layout/Layout';
 import { Card, Button, LoadingSpinner } from '../components/common';
 import { useUser } from '../contexts/UserContext';
-import { verifyCheckoutSession } from '../utils/stripe';
-import { toast } from 'react-toastify';
+import { useStripe } from '../hooks/useStripe';
 
-const SubscriptionSuccessPage = () => {
+export default function SubscriptionSuccessPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user, refreshUser } = useUser();
+  const { user, setSubscription } = useUser();
+  const { getSubscription } = useStripe();
   const [loading, setLoading] = useState(true);
-  const [sessionData, setSessionData] = useState(null);
-  const [error, setError] = useState(null);
+  const [subscriptionData, setSubscriptionData] = useState(null);
+
+  const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    const verifySession = async () => {
-      const sessionId = searchParams.get('session_id');
-      
+    const fetchSubscriptionData = async () => {
       if (!sessionId) {
-        setError('결제 세션 ID가 없습니다.');
-        setLoading(false);
+        navigate('/subscription');
         return;
       }
 
       try {
-        // 결제 세션 검증
-        const data = await verifyCheckoutSession(sessionId);
-        setSessionData(data);
-        
-        // 사용자 정보 새로고침 (구독 상태 업데이트)
-        if (refreshUser) {
-          await refreshUser();
+        setLoading(true);
+        // 구독 정보 새로고침
+        const data = await getSubscription();
+        if (data) {
+          setSubscriptionData(data);
+          setSubscription(data.subscription);
         }
-        
-        toast.success('🎉 결제가 완료되었습니다! 프리미엄 기능을 이용해보세요.');
-        
       } catch (error) {
-        console.error('Session verification failed:', error);
-        setError('결제 확인 중 오류가 발생했습니다.');
-        toast.error('결제 확인 중 오류가 발생했습니다.');
+        console.error('Failed to fetch subscription:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    verifySession();
-  }, [searchParams, refreshUser]);
+    fetchSubscriptionData();
+  }, [sessionId, getSubscription, setSubscription, navigate]);
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex flex-col justify-center items-center min-h-[400px]">
-          <LoadingSpinner />
-          <p className="mt-4 text-gray-600">결제 정보를 확인하고 있습니다...</p>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <Card className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">결제 확인 실패</h1>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <div className="space-x-4">
-              <Button onClick={() => navigate('/subscription')}>
-                구독 페이지로 돌아가기
-              </Button>
-              <Button variant="outline" onClick={() => navigate('/')}>
-                홈으로 가기
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </Layout>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <LoadingSpinner />
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <Card className="p-8 text-center">
-          {/* 성공 아이콘 */}
-          <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="text-center">
+        {/* 성공 아이콘 */}
+        <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+          <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            🎉 결제 완료!
-          </h1>
-          
-          <p className="text-lg text-gray-600 mb-6">
-            프리미엄 플랜 구독이 성공적으로 완료되었습니다.
-          </p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          🎉 구독이 완료되었습니다!
+        </h1>
+        
+        <p className="text-lg text-gray-600 mb-8">
+          TextPerfect 프리미엄을 이용해주셔서 감사합니다.<br />
+          이제 더욱 강력한 AI 글쓰기 도구를 경험해보세요!
+        </p>
 
-          {/* 구독 정보 */}
-          {sessionData && (
-            <div className="bg-gray-50 rounded-lg p-6 mb-6 text-left">
-              <h3 className="font-semibold text-gray-900 mb-3">구독 정보</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">플랜:</span>
-                  <span className="font-medium">프리미엄</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">결제 금액:</span>
-                  <span className="font-medium">₩{sessionData.amount?.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">결제일:</span>
-                  <span className="font-medium">{new Date().toLocaleDateString('ko-KR')}</span>
-                </div>
-                {sessionData.nextBillingDate && (
+        {/* 구독 정보 카드 */}
+        <Card className="mb-8 text-left">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">구독 정보</h3>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">플랜</span>
+                <span className="font-medium text-blue-600">프리미엄</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-gray-600">사용자</span>
+                <span className="font-medium">{user?.email}</span>
+              </div>
+              
+              {subscriptionData?.subscription && (
+                <>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">다음 결제일:</span>
+                    <span className="text-gray-600">시작일</span>
                     <span className="font-medium">
-                      {new Date(sessionData.nextBillingDate).toLocaleDateString('ko-KR')}
+                      {new Date(subscriptionData.subscription.currentPeriodStart).toLocaleDateString('ko-KR')}
                     </span>
                   </div>
-                )}
-              </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">다음 결제일</span>
+                    <span className="font-medium">
+                      {new Date(subscriptionData.subscription.currentPeriodEnd).toLocaleDateString('ko-KR')}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
-          )}
-
-          {/* 프리미엄 혜택 안내 */}
-          <div className="bg-blue-50 rounded-lg p-6 mb-6 text-left">
-            <h3 className="font-semibold text-blue-900 mb-3">이제 이런 기능들을 이용하실 수 있습니다!</h3>
-            <ul className="space-y-2 text-sm text-blue-800">
-              <li className="flex items-center">
-                <svg className="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                일일 10,000자 사용량
-              </li>
-              <li className="flex items-center">
-                <svg className="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                월 100개 문서 작성
-              </li>
-              <li className="flex items-center">
-                <svg className="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                고급 AI 분석 (Claude-3-Sonnet)
-              </li>
-              <li className="flex items-center">
-                <svg className="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                모든 템플릿 접근
-              </li>
-              <li className="flex items-center">
-                <svg className="w-4 h-4 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                AI 코치 고급 과정
-              </li>
-            </ul>
-          </div>
-
-          {/* 액션 버튼 */}
-          <div className="space-y-3">
-            <Button 
-              className="w-full"
-              onClick={() => navigate('/editor')}
-            >
-              지금 바로 글쓰기 시작하기
-            </Button>
-            
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/dashboard')}
-              >
-                대시보드 보기
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/subscription')}
-              >
-                구독 관리
-              </Button>
-            </div>
-          </div>
-
-          {/* 추가 안내 */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
-              구독 관리, 결제 내역 확인, 취소는 언제든지 구독 페이지에서 가능합니다.
-            </p>
           </div>
         </Card>
-      </div>
-    </Layout>
-  );
-};
 
-export default SubscriptionSuccessPage; 
+        {/* 프리미엄 혜택 */}
+        <Card className="mb-8 text-left">
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">이제 이용할 수 있는 혜택</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">월 100개 문서</p>
+                  <p className="text-sm text-gray-600">무제한에 가까운 분석</p>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">일일 10,000자</p>
+                  <p className="text-sm text-gray-600">대용량 텍스트 처리</p>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">모든 템플릿</p>
+                  <p className="text-sm text-gray-600">다양한 글쓰기 템플릿</p>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 11-9.75 9.75A9.75 9.75 0 0112 2.25z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-gray-900">우선 지원</p>
+                  <p className="text-sm text-gray-600">빠른 고객 서비스</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* 액션 버튼들 */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button 
+            variant="primary" 
+            size="lg"
+            onClick={() => navigate('/editor')}
+          >
+            에디터에서 시작하기
+          </Button>
+          
+          <Button 
+            variant="secondary" 
+            size="lg"
+            onClick={() => navigate('/dashboard')}
+          >
+            대시보드로 이동
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => navigate('/subscription')}
+          >
+            구독 관리
+          </Button>
+        </div>
+
+        {/* 도움말 */}
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+          <p className="text-sm text-blue-800">
+            💡 <strong>팁:</strong> 프리미엄 기능을 최대한 활용하려면 에디터에서 긴 텍스트를 분석해보거나, 
+            다양한 템플릿을 사용해보세요!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+} 
