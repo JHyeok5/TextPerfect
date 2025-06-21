@@ -3,17 +3,6 @@
   publish = "dist"
   functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["aws-sdk"]
-
-[dev]
-  command = "npm start"
-  port = 3000
-  targetPort = 3000
-  publish = "dist"
-  autoLaunch = true
-
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

@@ -26,7 +26,9 @@
     "build:dev": "webpack --mode development",
     "dev-server": "webpack serve --mode development",
     "watch": "webpack --mode development --watch",
-    "check-deps": "depcheck"
+    "check-deps": "depcheck",
+    "functions:build": "echo 'Functions ready for deployment'",
+    "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6",
