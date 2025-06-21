@@ -143,7 +143,7 @@ export function useApiRequest() {
  * 회원가입 API 호출
  */
 export async function signupUser(userData) {
-  return await apiRequest('/.netlify/functions/auth-signup-simple', {
+  return await apiRequest('https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth-signup-simple', {
     method: 'POST',
     body: JSON.stringify(userData)
   });
@@ -153,7 +153,7 @@ export async function signupUser(userData) {
  * 로그인 API 호출
  */
 export async function loginUser(credentials) {
-  return await apiRequest('/.netlify/functions/auth-login', {
+  return await apiRequest('https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth-login', {
     method: 'POST',
     body: JSON.stringify(credentials)
   });
@@ -168,7 +168,7 @@ export async function getCurrentUser() {
     throw new Error('인증 토큰이 없습니다.');
   }
 
-  return await apiRequest('/.netlify/functions/auth-me', {
+  return await apiRequest('https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth-me', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`
@@ -186,7 +186,7 @@ export async function logoutUser() {
   }
 
   try {
-    const result = await apiRequest('/.netlify/functions/auth-logout', {
+    const result = await apiRequest('https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth-logout', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`

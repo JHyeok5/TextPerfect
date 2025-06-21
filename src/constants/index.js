@@ -54,13 +54,13 @@ export const ANALYSIS_CATEGORIES = [
 
 // API 엔드포인트
 export const API_ENDPOINTS = {
-  AUTH: '/api/auth',
-  USER: '/api/user',
-  ANALYSIS: '/api/analysis',
-  OPTIMIZE: '/.netlify/functions/optimize',
-  SUBSCRIPTION: '/api/subscription',
-  TEMPLATES: '/api/templates',
-  COACH: '/api/coach',
+  AUTH: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth',
+  USER: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/user',
+  ANALYSIS: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/analysis',
+  OPTIMIZE: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/optimize',
+  SUBSCRIPTION: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/subscription',
+  TEMPLATES: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/templates',
+  COACH: 'https://zingy-pixie-14c20e.netlify.app/.netlify/functions/coach',
 };
 
 // 로컬 스토리지 키
