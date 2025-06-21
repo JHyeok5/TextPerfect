@@ -149,19 +149,26 @@ Authorization: Bearer <jwt-token>
 }
 ```
 
-## 텍스트 최적화 API
+## 텍스트 최적화 API (B단계 완성)
 
 - **엔드포인트**: `/.netlify/functions/optimize`
 - **HTTP Method**: `POST`
-- **설명**: 사용자가 입력한 텍스트를 지정된 목표(예: 비즈니스 이메일, 블로그 초고)에 맞게 Claude AI 모델을 통해 최적화하고 결과를 반환합니다.
+- **설명**: 사용자 유형별로 차별화된 Claude AI 모델을 통해 텍스트를 최적화합니다.
+
+### 사용자 유형별 AI 모델 차별화
+
+| 사용자 유형 | Claude 모델 | 최대 토큰 | 분석 품질 |
+|---|---|---|---|
+| GUEST | Claude-3-Haiku | 500 | 기본 최적화만 |
+| FREE | Claude-3-Haiku | 1,000 | 기본 최적화 + 가독성 분석 |
+| PREMIUM | Claude-3-Sonnet | 2,000 | 고급 최적화 + 상세 분석 + 스타일 코칭 + 문법 체크 |
 
 ### Request Body
 
 ```json
 {
   "text": "필요한 최소한의 범위 내에서, 버전 호환성, 라이선스, 보안 이슈 등을 고려합니다.",
-  "goal": "초등학생도 이해할 수 있도록 쉽게 설명",
-  "apiKey": "sk-...",
+  "purpose": "academic",
   "options": {
     "strength": "medium" 
   }
@@ -171,21 +178,63 @@ Authorization: Bearer <jwt-token>
 | 필드명 | 타입 | 필수 여부 | 설명 |
 |---|---|---|---|
 | `text` | string | 예 | 최적화를 원하는 원본 텍스트 |
-| `goal` | string | 예 | 텍스트 최적화의 목표 또는 컨텍스트 |
-| `apiKey` | string | 아니오 | 사용자가 자신의 API 키를 사용할 경우. (제공되지 않으면 서버 기본 키 사용) |
+| `purpose` | string | 예 | 텍스트 목적 ("academic", "business", "technical", "general") |
 | `options` | object | 아니오 | 추가적인 최적화 옵션 (예: 강도, 톤앤매너 등) |
+
+### Request Headers
+
+```
+Authorization: Bearer <jwt-token>  // 로그인 사용자만 (GUEST는 불필요)
+Content-Type: application/json
+```
 
 ### Success Response (200 OK)
 
+#### GUEST 사용자 응답:
 ```json
 {
   "success": true,
   "data": {
     "originalText": "필요한 최소한의 범위 내에서, 버전 호환성, 라이선스, 보안 이슈 등을 고려합니다.",
     "optimizedText": "우리가 사용하는 프로그램 재료들이 서로 잘 맞는지, 사용해도 되는 것인지, 그리고 안전한지 꼼꼼히 살펴봐야 해요.",
+    "analysis": {
+      "improvements": ["문장 길이 조정", "쉬운 단어 사용"]
+    },
+    "userType": "GUEST",
     "usage": {
       "input_tokens": 50,
       "output_tokens": 85
+    }
+  }
+}
+```
+
+#### PREMIUM 사용자 응답:
+```json
+{
+  "success": true,
+  "data": {
+    "originalText": "필요한 최소한의 범위 내에서, 버전 호환성, 라이선스, 보안 이슈 등을 고려합니다.",
+    "optimizedText": "우리가 사용하는 프로그램 재료들이 서로 잘 맞는지, 사용해도 되는 것인지, 그리고 안전한지 꼼꼼히 살펴봐야 해요.",
+    "analysis": {
+      "improvements": ["문장 길이 조정", "쉬운 단어 사용"],
+      "readability": {
+        "score": 85,
+        "level": "초등학교 고학년"
+      },
+      "style": {
+        "tone": "친근함",
+        "formality": "비격식"
+      },
+      "grammar": {
+        "corrections": [],
+        "suggestions": ["연결어 다양화 권장"]
+      }
+    },
+    "userType": "PREMIUM",
+    "usage": {
+      "input_tokens": 50,
+      "output_tokens": 185
     }
   }
 }

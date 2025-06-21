@@ -16,7 +16,8 @@ if (!isNetlify) {
 
 const requiredEnvVars = [
   'GITHUB_TOKEN',
-  'JWT_SECRET'
+  'JWT_SECRET',
+  'CLAUDE_API_KEY'
 ];
 
 const optionalEnvVars = [

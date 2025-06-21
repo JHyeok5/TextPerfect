@@ -29,10 +29,12 @@ const USAGE_LIMITS = {
   FREE: {
     dailyCharacters: 1000,
     maxTextLength: 3000,
+    monthlyDocs: 10,
   },
   PREMIUM: {
     dailyCharacters: 10000,
     maxTextLength: 10000,
+    monthlyDocs: 100,
   }
 };
 
@@ -46,6 +48,12 @@ const defaultSettings = {
 // 오늘 날짜 키 생성
 const getTodayKey = () => {
   return new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
+};
+
+// 이번 달 키 생성
+const getThisMonthKey = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; // YYYY-MM 형식
 };
 
 const UserContext = createContext({
@@ -73,8 +81,9 @@ export function UserProvider({ children }) {
   const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [dailyUsage, setDailyUsage] = useState(0);
+  const [monthlyDocs, setMonthlyDocs] = useState(0);
 
-  // 로컬 스토리지에서 오늘의 사용량 로드
+  // 로컬 스토리지에서 오늘의 사용량 및 이번 달 문서 수 로드
   useEffect(() => {
     const todayKey = getTodayKey();
     const usageKey = `textperfect_usage_${todayKey}`;
@@ -84,11 +93,26 @@ export function UserProvider({ children }) {
       setDailyUsage(parseInt(savedUsage, 10) || 0);
     }
     
+    // 이번 달 문서 수 로드
+    const monthKey = getThisMonthKey();
+    const docsKey = `textperfect_docs_${monthKey}`;
+    const savedDocs = localStorage.getItem(docsKey);
+    
+    if (savedDocs) {
+      setMonthlyDocs(parseInt(savedDocs, 10) || 0);
+    }
+    
     // 이전 날짜의 사용량 데이터 정리
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayKey = `textperfect_usage_${yesterday.toISOString().split('T')[0]}`;
     localStorage.removeItem(yesterdayKey);
+    
+    // 이전 달의 문서 수 데이터 정리
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const lastMonthKey = `textperfect_docs_${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
+    localStorage.removeItem(lastMonthKey);
   }, []);
 
   // 앱 시작 시 토큰으로 로그인 상태 복원
@@ -191,6 +215,37 @@ export function UserProvider({ children }) {
     return USAGE_LIMITS[plan]?.maxTextLength || USAGE_LIMITS.FREE.maxTextLength;
   };
 
+  // 월 문서 수 관리 함수들
+  const canCreateDocument = () => {
+    const plan = getUserPlan();
+    const limit = USAGE_LIMITS[plan]?.monthlyDocs || USAGE_LIMITS.FREE.monthlyDocs;
+    return monthlyDocs < limit;
+  };
+
+  const addDocument = () => {
+    const newDocCount = monthlyDocs + 1;
+    setMonthlyDocs(newDocCount);
+    
+    // 로컬 스토리지에 저장
+    const monthKey = getThisMonthKey();
+    const docsKey = `textperfect_docs_${monthKey}`;
+    localStorage.setItem(docsKey, newDocCount.toString());
+    
+    logDebug('Document count updated:', { previous: monthlyDocs, new: newDocCount });
+  };
+
+  const getRemainingDocs = () => {
+    const plan = getUserPlan();
+    const limit = USAGE_LIMITS[plan]?.monthlyDocs || USAGE_LIMITS.FREE.monthlyDocs;
+    return Math.max(0, limit - monthlyDocs);
+  };
+
+  const getDocsUsagePercentage = () => {
+    const plan = getUserPlan();
+    const limit = USAGE_LIMITS[plan]?.monthlyDocs || USAGE_LIMITS.FREE.monthlyDocs;
+    return Math.min(100, (monthlyDocs / limit) * 100);
+  };
+
   const value = {
     user,
     isAuthenticated: !!user,
@@ -211,6 +266,12 @@ export function UserProvider({ children }) {
     getMaxTextLength,
     getUserPlan,
     USAGE_LIMITS,
+    // 월 문서 수 관리
+    monthlyDocs,
+    canCreateDocument,
+    addDocument,
+    getRemainingDocs,
+    getDocsUsagePercentage,
   };
 
   return (
