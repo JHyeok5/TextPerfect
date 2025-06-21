@@ -29,9 +29,10 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA 라우팅 (Static 파일 우선)
+# SPA 라우팅 (HTML 요청만)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  headers = {Accept = "text/html"}
   force = false 
