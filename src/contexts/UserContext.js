@@ -41,28 +41,37 @@ export function UserProvider({ children }) {
   // 앱 시작 시 토큰으로 로그인 상태 복원
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log('UserContext: Initializing auth...');
       const token = localStorage.getItem('authToken');
+      console.log('UserContext: Found token:', !!token);
+      
       if (token) {
         try {
           // validateAndRefreshAuth를 동적으로 import (순환 참조 방지)
           const { validateAndRefreshAuth } = await import('../utils/api');
+          console.log('UserContext: Validating token...');
           const userData = await validateAndRefreshAuth();
           if (userData) {
+            console.log('UserContext: Auto login successful:', userData);
             setUser(userData);
+          } else {
+            console.log('UserContext: Token validation failed');
           }
         } catch (error) {
-          console.error('Auto login failed:', error);
+          console.error('UserContext: Auto login failed:', error);
           // 토큰이 무효하면 제거
           localStorage.removeItem('authToken');
         }
       }
       setLoading(false);
+      console.log('UserContext: Auth initialization complete');
     };
 
     initializeAuth();
   }, []);
 
   const login = (userData) => {
+    console.log('UserContext login called with:', userData);
     setUser(userData);
     // 토큰은 API 호출 시 이미 저장됨
   };

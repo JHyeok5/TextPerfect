@@ -12,19 +12,24 @@ export default function LoginForm({ onClose, onSwitchToSignup }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Login form submitted', { email, password: '***' });
     setError('');
     setLoading(true);
 
     try {
+      console.log('Calling loginUser API...');
       // 실제 API 호출
       const result = await loginUser({ email, password });
+      console.log('Login API result:', result);
       
       if (result.success) {
         // 토큰 저장
         localStorage.setItem('authToken', result.data.token);
+        console.log('Token saved to localStorage');
         
         // UserContext를 통해 로그인 상태 업데이트
         login(result.data.user);
+        console.log('User context updated');
         
         // 모달 닫기
         if (onClose) onClose();
@@ -57,7 +62,7 @@ export default function LoginForm({ onClose, onSwitchToSignup }) {
       </div>
       
       <div>
-        <label htmlFor="password"className="block text-sm font-medium text-gray-700">비밀번호</label>
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700">비밀번호</label>
         <input
           type="password"
           id="password"

@@ -12,13 +12,25 @@ export default function Header() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const openLoginModal = () => {
+    console.log('Opening login modal');
     setIsSignupModalOpen(false);
     setIsLoginModalOpen(true);
   };
 
   const openSignupModal = () => {
+    console.log('Opening signup modal');
     setIsLoginModalOpen(false);
     setIsSignupModalOpen(true);
+  };
+
+  const handleLoginClick = () => {
+    console.log('Login button clicked');
+    openLoginModal();
+  };
+
+  const handleSignupClick = () => {
+    console.log('Signup button clicked');
+    openSignupModal();
   };
 
   return (
@@ -59,20 +71,20 @@ export default function Header() {
           </>
         ) : (
           <div className="flex items-center gap-2">
-            <Button onClick={() => setIsLoginModalOpen(true)} variant="secondary">로그인</Button>
-            <Button onClick={() => setIsSignupModalOpen(true)} variant="primary">회원가입</Button>
+            <Button onClick={handleLoginClick} variant="secondary">로그인</Button>
+            <Button onClick={handleSignupClick} variant="primary">회원가입</Button>
           </div>
         )}
       </div>
 
-      <Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} title="로그인">
+      <Modal open={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} title="로그인">
         <LoginForm 
           onClose={() => setIsLoginModalOpen(false)} 
           onSwitchToSignup={openSignupModal} 
         />
       </Modal>
 
-      <Modal isOpen={isSignupModalOpen} onClose={() => setIsSignupModalOpen(false)} title="회원가입">
+      <Modal open={isSignupModalOpen} onClose={() => setIsSignupModalOpen(false)} title="회원가입">
         <SignupForm 
           onClose={() => setIsSignupModalOpen(false)}
           onSwitchToLogin={openLoginModal}

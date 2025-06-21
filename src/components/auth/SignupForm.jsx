@@ -14,6 +14,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Signup form submitted', { nickname, email, password: '***' });
     setError('');
     setLoading(true);
 
@@ -25,6 +26,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
     }
 
     try {
+      console.log('Calling signupUser API...');
       // 실제 API 호출
       const result = await signupUser({ 
         nickname, 
@@ -32,13 +34,16 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
         password,
         passwordConfirm 
       });
+      console.log('Signup API result:', result);
       
       if (result.success) {
         // 토큰 저장
         localStorage.setItem('authToken', result.data.token);
+        console.log('Token saved to localStorage');
         
         // 가입 성공 시, 자동 로그인 처리
         login(result.data.user);
+        console.log('User context updated');
         
         // 모달 닫기
         if (onClose) onClose();
@@ -87,7 +92,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
       </div>
       
       <div>
-        <label htmlFor="password-signup"className="block text-sm font-medium text-gray-700">비밀번호</label>
+        <label htmlFor="password-signup" className="block text-sm font-medium text-gray-700">비밀번호</label>
         <input
           type="password"
           id="password-signup"
@@ -99,7 +104,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
       </div>
 
       <div>
-        <label htmlFor="password-confirm"className="block text-sm font-medium text-gray-700">비밀번호 확인</label>
+        <label htmlFor="password-confirm" className="block text-sm font-medium text-gray-700">비밀번호 확인</label>
         <input
           type="password"
           id="password-confirm"
