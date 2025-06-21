@@ -2,8 +2,17 @@
 
 /**
  * 환경 변수 체크 스크립트
- * 배포 전 필수 환경 변수가 설정되어 있는지 확인
+ * Netlify 배포 환경에서만 필수 환경 변수가 설정되어 있는지 확인
  */
+
+// Netlify 환경인지 확인
+const isNetlify = process.env.NETLIFY === 'true';
+
+if (!isNetlify) {
+  console.log('🏠 로컬 환경에서는 환경 변수 체크를 건너뜁니다.');
+  console.log('Netlify 배포 시에만 환경 변수가 체크됩니다.');
+  process.exit(0);
+}
 
 const requiredEnvVars = [
   'GITHUB_TOKEN',
@@ -12,10 +21,13 @@ const requiredEnvVars = [
 
 const optionalEnvVars = [
   'NODE_ENV',
-  'AWS_LAMBDA_JS_RUNTIME'
+  'AWS_LAMBDA_JS_RUNTIME',
+  'GITHUB_USERNAME',
+  'GITHUB_REPO',
+  'JWT_EXPIRES_IN'
 ];
 
-console.log('🔍 환경 변수 체크 중...\n');
+console.log('🔍 Netlify 환경에서 환경 변수 체크 중...\n');
 
 let hasError = false;
 

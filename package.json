@@ -29,8 +29,7 @@
     "check-deps": "depcheck",
     "check-env": "node scripts/check-env.js",
     "functions:build": "echo 'Functions ready for deployment'",
-    "postbuild": "echo 'Build completed successfully'",
-    "prebuild": "npm run check-env"
+    "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {
     "@babel/runtime": "^7.27.6",
