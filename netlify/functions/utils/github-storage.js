@@ -40,7 +40,7 @@ async function githubApiRequest(endpoint, method = 'GET', data = null) {
  */
 async function getFileContent(filePath) {
   try {
-    const endpoint = `/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/contents/${filePath}`;
+    const endpoint = `/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPO}/contents/${filePath}`;
     const response = await githubApiRequest(endpoint);
     
     // Base64 디코딩
@@ -65,7 +65,7 @@ async function getFileContent(filePath) {
  * 파일 내용을 GitHub에 저장하기
  */
 async function saveFileContent(filePath, content, sha = null) {
-  const endpoint = `/repos/${process.env.GITHUB_OWNER}/${process.env.GITHUB_REPO}/contents/${filePath}`;
+  const endpoint = `/repos/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPO}/contents/${filePath}`;
   
   const data = {
     message: `Update ${filePath}`,
@@ -84,12 +84,12 @@ async function saveFileContent(filePath, content, sha = null) {
  */
 function getDefaultFileContent(filePath) {
   switch (filePath) {
-    case 'data/users.json':
+    case 'users.json':
       return { users: [] };
-    case 'data/sessions.json':
-      return { blacklistedTokens: [] };
-    case 'data/stats.json':
-      return { totalUsers: 0, totalLogins: 0, lastUpdated: new Date().toISOString() };
+    case 'sessions.json':
+      return { sessions: [] };
+    case 'stats.json':
+      return { stats: { totalUsers: 0, activeUsers: 0, totalOptimizations: 0 } };
     default:
       return {};
   }
@@ -99,7 +99,7 @@ function getDefaultFileContent(filePath) {
  * 모든 사용자 데이터 조회
  */
 async function getUsersData() {
-  const { content } = await getFileContent('data/users.json');
+  const { content } = await getFileContent('users.json');
   return content;
 }
 
@@ -107,8 +107,8 @@ async function getUsersData() {
  * 사용자 데이터 저장
  */
 async function saveUsersData(usersData) {
-  const { sha } = await getFileContent('data/users.json');
-  return await saveFileContent('data/users.json', usersData, sha);
+  const { sha } = await getFileContent('users.json');
+  return await saveFileContent('users.json', usersData, sha);
 }
 
 /**
@@ -197,46 +197,66 @@ async function updateLastLogin(userId) {
  * 토큰 블랙리스트 관리
  */
 async function addToBlacklist(token) {
-  const { content, sha } = await getFileContent('data/sessions.json');
-  content.blacklistedTokens.push({
-    token,
-    blacklistedAt: new Date().toISOString()
+  const { content, sha } = await getFileContent('sessions.json');
+  
+  // sessions 배열이 없으면 생성
+  if (!content.sessions) {
+    content.sessions = [];
+  }
+  
+  content.sessions.push({
+    tokenId: token.substring(0, 10), // 토큰의 일부만 저장 (보안)
+    userId: null, // 필요시 사용자 ID 추가
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    isBlacklisted: true
   });
   
   // 만료된 토큰들 정리 (7일 이상 된 것들)
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  content.blacklistedTokens = content.blacklistedTokens.filter(
-    item => new Date(item.blacklistedAt) > sevenDaysAgo
+  content.sessions = content.sessions.filter(
+    item => new Date(item.createdAt) > sevenDaysAgo
   );
 
-  await saveFileContent('data/sessions.json', content, sha);
+  await saveFileContent('sessions.json', content, sha);
 }
 
 /**
  * 토큰이 블랙리스트에 있는지 확인
  */
 async function isTokenBlacklisted(token) {
-  const { content } = await getFileContent('data/sessions.json');
-  return content.blacklistedTokens.some(item => item.token === token);
+  const { content } = await getFileContent('sessions.json');
+  if (!content.sessions) return false;
+  
+  const tokenId = token.substring(0, 10);
+  return content.sessions.some(item => item.tokenId === tokenId && item.isBlacklisted);
 }
 
 /**
  * 통계 업데이트
  */
 async function updateStats(action) {
-  const { content, sha } = await getFileContent('data/stats.json');
+  const { content, sha } = await getFileContent('stats.json');
+  
+  // stats 구조 확인 및 초기화
+  if (!content.stats) {
+    content.stats = { totalUsers: 0, activeUsers: 0, totalOptimizations: 0 };
+  }
   
   switch (action) {
     case 'userCreated':
-      content.totalUsers += 1;
+      content.stats.totalUsers += 1;
       break;
     case 'userLogin':
-      content.totalLogins += 1;
+      content.stats.activeUsers += 1;
+      break;
+    case 'optimization':
+      content.stats.totalOptimizations += 1;
       break;
   }
   
-  content.lastUpdated = new Date().toISOString();
-  await saveFileContent('data/stats.json', content, sha);
+  content.stats.lastUpdated = new Date().toISOString();
+  await saveFileContent('stats.json', content, sha);
 }
 
 module.exports = {
