@@ -39,52 +39,63 @@ JWT_SECRET=your-super-secret-jwt-key-here-2024
 
 ### 3. GitHub Storage (데이터 저장)
 ```bash
-GITHUB_TOKEN=ghp_...
-GITHUB_OWNER=your-data-repo-owner
-GITHUB_REPO=your-data-repo-name
+DATA_REPO_TOKEN=ghp_...
+DATA_REPO_OWNER=your-github-username
+DATA_REPO_NAME=TextPerfect-userdata
 ```
 - **용도**: 사용자 데이터 및 분석 기록 저장
-- **GITHUB_TOKEN 획득**:
+- **DATA_REPO_TOKEN 획득**:
   1. GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
   2. Generate new token (classic)
   3. Scopes: `repo` (Full control of private repositories) 선택
   4. 생성된 토큰을 복사 (한 번만 표시됨)
-- **저장소 설정**: Private repository 권장
+- **저장소 설정**: `TextPerfect-userdata` 레포지토리 생성 필요 (Private 권장)
 - **보안 수준**: 🔴 극비 (저장소 전체 접근)
+- **주의사항**: Secret names는 `GITHUB_`로 시작할 수 없음
 
-### 4. Stripe 결제 시스템
+### 4. 토스페이먼츠 결제 시스템 (현재 적용됨)
 ```bash
 # 백엔드용 (GitHub Secrets에 필수)
-STRIPE_SECRET_KEY=sk_test_... (또는 sk_live_...)
-STRIPE_WEBHOOK_SECRET=whsec_...
+TOSS_SECRET_KEY=test_sk_... (또는 live_sk_...)
 
 # 프론트엔드용 (GitHub Secrets에 필수)
-STRIPE_PUBLISHABLE_KEY=pk_test_... (또는 pk_live_...)
-REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_... (또는 pk_live_...)
+TOSS_CLIENT_KEY=test_ck_... (또는 live_ck_...)
+REACT_APP_TOSS_CLIENT_KEY=test_ck_... (또는 live_ck_...)
 ```
-- **용도**: 구독 결제 및 관리
-- **획득 방법**: [Stripe Dashboard](https://dashboard.stripe.com/) → API keys
+- **용도**: 구독 결제 및 관리 (한국형 결제 시스템)
+- **획득 방법**: [토스페이먼츠 개발자센터](https://developers.tosspayments.com/) → API 키 관리
 - **환경별 구분**:
-  - 개발/테스트: `sk_test_`, `pk_test_`
-  - 프로덕션: `sk_live_`, `pk_live_`
-- **웹훅 설정**: Stripe → Webhooks → Add endpoint
+  - 개발/테스트: `test_sk_`, `test_ck_`
+  - 프로덕션: `live_sk_`, `live_ck_`
 - **보안 수준**: 🔴 극비 (결제 정보 접근)
+- **상태**: ⏳ **추후 토스페이먼츠 가입 후 입력 예정**
+
+### 5. Stripe 결제 시스템 (미사용 - 참고용)
+```bash
+# 현재 사용하지 않음 (토스페이먼츠로 대체)
+# STRIPE_SECRET_KEY=sk_test_...
+# STRIPE_PUBLISHABLE_KEY=pk_test_...
+# REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_...
+# STRIPE_WEBHOOK_SECRET=whsec_...
+```
+- **상태**: ❌ **사용 안 함** (토스페이먼츠로 대체됨)
 
 ---
 
 ## 🔗 선택적 환경 변수 목록
 
-### 5. Google OAuth (소셜 로그인)
+### 5. Google OAuth (소셜 로그인) - 현재 적용됨
 ```bash
-# 프론트엔드용 (공개 가능)
-GOOGLE_CLIENT_ID=123456789-abc.apps.googleusercontent.com
-REACT_APP_GOOGLE_CLIENT_ID=123456789-abc.apps.googleusercontent.com
-
 # 백엔드용 (GitHub Secrets에 필수 🔴)
 GOOGLE_CLIENT_SECRET=GOCSPX-very-secret-key
-GOOGLE_REDIRECT_URI=https://your-domain.netlify.app/.netlify/functions/auth-google
+GOOGLE_REDIRECT_URI=https://textperfect.netlify.app/auth/google/callback
+
+# 프론트엔드용 (GitHub Secrets에 설정됨)
+GOOGLE_CLIENT_ID=379125371254-5tdkum8h1udol3so59v0r8o4ogmj9bc4.apps.googleusercontent.com
+REACT_APP_GOOGLE_CLIENT_ID=379125371254-5tdkum8h1udol3so59v0r8o4ogmj9bc4.apps.googleusercontent.com
 ```
 - **용도**: Google 계정으로 로그인
+- **상태**: ✅ **설정 완료** (OAuth 범위 설정 필요)
 - **CLIENT_SECRET이 중요한 이유**:
   - 인증 코드를 액세스 토큰으로 교환할 때 필요
   - 노출 시 악의적 사용자가 앱을 가장할 수 있음
@@ -97,16 +108,17 @@ GOOGLE_REDIRECT_URI=https://your-domain.netlify.app/.netlify/functions/auth-goog
   5. Authorized redirect URIs 설정
 - **보안 수준**: 🔴 극비 (CLIENT_SECRET), 🟢 공개 가능 (CLIENT_ID)
 
-### 6. GitHub OAuth (소셜 로그인)
+### 6. GitHub OAuth (소셜 로그인) - 현재 적용됨
 ```bash
-# 프론트엔드용 (공개 가능)
-GITHUB_CLIENT_ID=Iv1.1234567890abcdef
-REACT_APP_GITHUB_CLIENT_ID=Iv1.1234567890abcdef
-
 # 백엔드용 (GitHub Secrets에 필수 🔴)
-GITHUB_CLIENT_SECRET=1234567890abcdef...
+OAUTH_CLIENT_SECRET=1234567890abcdef...
+
+# 프론트엔드용 (GitHub Secrets에 설정됨)
+OAUTH_CLIENT_ID=Iv1.1234567890abcdef
+REACT_APP_GITHUB_CLIENT_ID=Iv1.1234567890abcdef
 ```
 - **용도**: GitHub 계정으로 로그인
+- **상태**: ⏳ **GitHub OAuth 앱 등록 후 실제 값 입력 예정**
 - **CLIENT_SECRET이 중요한 이유**:
   - OAuth 토큰 교환 과정에서 앱 신원 확인
   - 노출 시 사용자 정보 탈취 위험
@@ -114,7 +126,7 @@ GITHUB_CLIENT_SECRET=1234567890abcdef...
 - **획득 방법**:
   1. GitHub → Settings → Developer settings → OAuth Apps
   2. New OAuth App
-  3. Authorization callback URL: `https://your-domain.netlify.app/.netlify/functions/auth-github`
+  3. Authorization callback URL: `https://textperfect.netlify.app/auth/github/callback`
 - **보안 수준**: 🔴 극비 (CLIENT_SECRET), 🟢 공개 가능 (CLIENT_ID)
 
 ---
@@ -149,17 +161,16 @@ Repository → Settings → Secrets and variables → Actions → New repository
 5. `GITHUB_REPO` - 데이터 저장소 이름
 
 #### **Phase 2: 결제 시스템 (구독 기능)**
-6. `STRIPE_SECRET_KEY` - 결제 처리
-7. `STRIPE_PUBLISHABLE_KEY` - 프론트엔드 결제
-8. `STRIPE_WEBHOOK_SECRET` - 결제 검증
-9. `REACT_APP_STRIPE_PUBLISHABLE_KEY` - React 앱용
+6. `TOSS_SECRET_KEY` - 결제 처리
+7. `TOSS_CLIENT_KEY` - 프론트엔드 결제
+8. `REACT_APP_TOSS_CLIENT_KEY` - React 앱용
 
 #### **Phase 3: 소셜 로그인 (편의 기능)**
-10. `GOOGLE_CLIENT_SECRET` - Google OAuth 인증 🔴
-11. `GOOGLE_REDIRECT_URI` - Google 콜백 URL
-12. `GITHUB_CLIENT_SECRET` - GitHub OAuth 인증 🔴
-13. `REACT_APP_GOOGLE_CLIENT_ID` - React 앱용 Google ID
-14. `REACT_APP_GITHUB_CLIENT_ID` - React 앱용 GitHub ID
+9. `GOOGLE_CLIENT_SECRET` - Google OAuth 인증 🔴
+10. `GOOGLE_REDIRECT_URI` - Google 콜백 URL
+11. `OAUTH_CLIENT_SECRET` - GitHub OAuth 인증 🔴
+12. `REACT_APP_GOOGLE_CLIENT_ID` - React 앱용 Google ID
+13. `REACT_APP_GITHUB_CLIENT_ID` - React 앱용 GitHub ID
 
 > **💡 참고**: CLIENT_ID는 공개되어도 상관없지만, 환경별 관리의 일관성을 위해 GitHub Secrets에 포함하는 것을 권장합니다.
 
@@ -215,15 +226,15 @@ curl -X POST https://oauth2.googleapis.com/token \
 
 ### 절대 공개하면 안 되는 키들
 - ❌ `CLAUDE_API_KEY` - API 사용량 과금
-- ❌ `STRIPE_SECRET_KEY` - 결제 정보 접근
+- ❌ `TOSS_SECRET_KEY` - 결제 정보 접근
 - ❌ `JWT_SECRET` - 사용자 인증 우회 가능
 - ❌ `GITHUB_TOKEN` - 저장소 전체 접근
 - ❌ `*_CLIENT_SECRET` - OAuth 앱 권한 탈취 🔴
-- ❌ `STRIPE_WEBHOOK_SECRET` - 결제 검증 우회
+- ❌ `REACT_APP_TOSS_CLIENT_KEY` - 결제 검증 우회
 
 ### 공개되어도 상관없지만 관리상 보호하는 키들
 - 🟡 `*_CLIENT_ID` - 공개 가능하지만 환경별 관리 필요
-- 🟡 `STRIPE_PUBLISHABLE_KEY` - 공개 가능하지만 환경별 관리 필요
+- 🟡 `REACT_APP_TOSS_CLIENT_KEY` - 공개 가능하지만 환경별 관리 필요
 
 ### 안전한 키 관리
 - ✅ 정기적인 키 로테이션 (3-6개월)
@@ -233,9 +244,9 @@ curl -X POST https://oauth2.googleapis.com/token \
 - ✅ OAuth 앱 도메인 제한 설정
 
 ### 환경별 키 구분
-- **개발환경**: `sk_test_`, `pk_test_` (Stripe 테스트 키)
+- **개발환경**: `test_sk_`, `test_ck_` (토스페이먼츠 테스트 키)
 - **스테이징**: 프로덕션과 별도 키 사용
-- **프로덕션**: `sk_live_`, `pk_live_` (Stripe 라이브 키)
+- **프로덕션**: `live_sk_`, `live_ck_` (토스페이먼츠 라이브 키)
 
 ---
 
@@ -273,12 +284,12 @@ curl https://your-domain.netlify.app/.netlify/functions/debug
 3. 변수값에 공백이나 특수문자 확인
 ```
 
-#### 2. Stripe 결제 실패
+#### 2. 토스페이먼츠 결제 실패
 ```bash
 # 확인 사항
-1. STRIPE_SECRET_KEY와 STRIPE_PUBLISHABLE_KEY 환경 일치 (test/live)
-2. STRIPE_WEBHOOK_SECRET 설정 확인
-3. Stripe 대시보드에서 웹훅 엔드포인트 확인
+1. TOSS_SECRET_KEY와 TOSS_CLIENT_KEY 환경 일치 (test/live)
+2. TOSS_CLIENT_KEY 설정 확인
+3. 토스페이먼츠 대시보드에서 웹훅 엔드포인트 확인
 ```
 
 #### 3. GitHub Storage 연결 실패
@@ -307,7 +318,7 @@ curl https://your-domain.netlify.app/.netlify/functions/debug
 - [ ] JWT Secret 생성 및 설정
 - [ ] GitHub Personal Access Token 발급
 - [ ] GitHub 데이터 저장소 생성 (Private)
-- [ ] Stripe 계정 생성 및 키 발급
+- [ ] 토스페이먼츠 계정 생성 및 키 발급
 - [ ] Google/GitHub OAuth 앱 생성
 - [ ] **모든 SECRET 키들을 GitHub Secrets에 설정** 🔴
 - [ ] 환경 변수 체크 스크립트 실행
@@ -315,7 +326,7 @@ curl https://your-domain.netlify.app/.netlify/functions/debug
 
 ### 프로덕션 배포 전 체크리스트
 - [ ] 모든 테스트 키를 라이브 키로 교체
-- [ ] Stripe 웹훅 엔드포인트 설정
+- [ ] 토스페이먼츠 웹훅 엔드포인트 설정
 - [ ] OAuth 앱 프로덕션 URL로 업데이트
 - [ ] **OAuth CLIENT_SECRET 키들 로테이션** 🔴
 - [ ] 보안 키들 로테이션 일정 수립
@@ -327,7 +338,7 @@ curl https://your-domain.netlify.app/.netlify/functions/debug
 
 ### 공식 문서 링크
 - [Anthropic API 문서](https://docs.anthropic.com/)
-- [Stripe API 문서](https://stripe.com/docs/api)
+- [토스페이먼츠 API 문서](https://developers.tosspayments.com/)
 - [GitHub API 문서](https://docs.github.com/en/rest)
 - [Netlify Functions 문서](https://docs.netlify.com/functions/overview/)
 - [Google OAuth 문서](https://developers.google.com/identity/protocols/oauth2)
