@@ -1,5 +1,8 @@
+# Functions 경로는 그대로 통과
+/.netlify/functions/*  /.netlify/functions/:splat  200!
+
 # API 라우팅
 /api/*  /.netlify/functions/:splat  200
 
-# SPA 라우팅 (Functions 제외)
+# SPA 라우팅 (나머지 모든 경로)
 /*  /index.html  200 
