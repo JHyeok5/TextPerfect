@@ -21,8 +21,9 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA 라우팅
+# SPA 라우팅 (HTML 파일만 리다이렉트)
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200 
+  status = 200
+  force = false 
