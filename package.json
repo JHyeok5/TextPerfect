@@ -34,12 +34,15 @@
   "dependencies": {
     "@babel/runtime": "^7.27.6",
     "@heroicons/react": "^2.2.0",
+    "@octokit/rest": "^22.0.0",
+    "@stripe/stripe-js": "^7.3.1",
     "@tailwindcss/forms": "^0.5.7",
-    "axios": "^1.6.7",
+    "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "classnames": "^2.5.1",
     "core-js": "^3.33.3",
     "dotenv": "^16.4.5",
+    "google-auth-library": "^10.1.0",
     "jsonwebtoken": "^9.0.2",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -47,7 +50,12 @@
     "react-router-dom": "^6.20.0",
     "react-toastify": "^11.0.5",
     "regenerator-runtime": "^0.14.0",
-    "uuid": "^11.1.0"
+    "stripe": "^18.2.1",
+    "uuid": "^11.1.0",
+    "workbox-core": "^7.3.0",
+    "workbox-precaching": "^7.3.0",
+    "workbox-routing": "^7.3.0",
+    "workbox-strategies": "^7.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
@@ -80,7 +88,8 @@
     "webpack": "^5.89.0",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.2.2"
+    "webpack-dev-server": "^5.2.2",
+    "workbox-webpack-plugin": "^7.3.0"
   },
   "browserslist": {
     "production": [

@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { ProgressBar, Button, Modal } from '../common';
 import { LoginForm, SignupForm, ForgotPasswordForm } from '../auth';
+import PWAInstallButton from '../common/PWAInstallButton';
 
 // 환경별 로깅 함수
 const logDebug = (...args) => {
@@ -59,10 +60,13 @@ export default function Header() {
           <NavLink to="/editor" className={({isActive}) => `py-2 border-b-2 ${isActive ? 'text-blue-600 border-blue-600' : 'text-gray-600 border-transparent hover:text-blue-600'}`}>에디터</NavLink>
           <NavLink to="/templates" className={({isActive}) => `py-2 border-b-2 ${isActive ? 'text-blue-600 border-blue-600' : 'text-gray-600 border-transparent hover:text-blue-600'}`}>템플릿</NavLink>
           <NavLink to="/coaching" className={({isActive}) => `py-2 border-b-2 ${isActive ? 'text-blue-600 border-blue-600' : 'text-gray-600 border-transparent hover:text-blue-600'}`}>AI 코치</NavLink>
+          <NavLink to="/community" className={({isActive}) => `py-2 border-b-2 ${isActive ? 'text-blue-600 border-blue-600' : 'text-gray-600 border-transparent hover:text-blue-600'}`}>커뮤니티</NavLink>
         </nav>
       </div>
 
       <div className="flex items-center gap-4">
+        <PWAInstallButton className="hidden sm:flex" />
+        
         {isAuthenticated && user ? (
           <>
             <div className="hidden md:block text-sm text-gray-600 text-right">
@@ -81,6 +85,7 @@ export default function Header() {
                   <p className="text-sm text-gray-500">Lv.{user.level}</p>
                 </div>
                 <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">프로필</Link>
+                <Link to="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">분석 히스토리</Link>
                 <Link to="/subscription" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">구독 관리</Link>
                 <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600">로그아웃</button>
               </div>

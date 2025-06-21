@@ -266,6 +266,44 @@ exports.handler = async (event, context) => {
     // 사용량 추적
     await trackUsage(user, text.length, userType);
 
+    // 로그인 사용자의 경우 분석 결과 자동 저장 (Phase 2 추가)
+    if (user && user.id) {
+      try {
+        const { saveToGitHub, generateId, extractTags } = require('./utils/github-storage');
+        
+        const historyData = {
+          id: generateId(),
+          userId: user.id,
+          originalText: text,
+          optimizedText: result.optimized_text,
+          analysis: {
+            before: result.before_analysis,
+            after: result.after_analysis,
+            readability: result.after_analysis.readability,
+            clarity: result.after_analysis.clarity,
+            professionalism: result.after_analysis.professionalLevel,
+            improvements: result.style_suggestions || [],
+            detailedFeedback: result.detailed_feedback
+          },
+          purpose,
+          options,
+          tags: extractTags(purpose, text),
+          timestamp: new Date().toISOString(),
+          textLength: text.length,
+          improvementScore: result.after_analysis.readability || 0,
+          userType
+        };
+
+        const filePath = `users/${user.id}/history/${historyData.id}.json`;
+        await saveToGitHub(filePath, historyData, `Auto-save analysis ${historyData.id}`);
+        
+        logDebug('Analysis auto-saved:', historyData.id);
+      } catch (saveError) {
+        // 저장 실패해도 최적화 결과는 반환
+        logError('Failed to auto-save analysis:', saveError);
+      }
+    }
+
     // 성공 응답
     return {
       statusCode: 200,

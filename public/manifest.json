@@ -1,20 +1,60 @@
 {
   "short_name": "TextPerfect",
   "name": "TextPerfect - 목적에 맞는 텍스트 최적화 서비스",
+  "description": "AI 기반 텍스트 최적화 및 글쓰기 코칭 서비스",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "16x16",
+      "sizes": "16x16 32x32 48x48",
       "type": "image/x-icon"
     },
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "128x128"
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "theme_color": "#0ea5e9",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "categories": ["productivity", "education", "utilities"],
+  "lang": "ko",
+  "dir": "ltr",
+  "scope": "/",
+  "shortcuts": [
+    {
+      "name": "텍스트 최적화",
+      "short_name": "최적화",
+      "description": "새로운 텍스트 최적화 시작",
+      "url": "/editor",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "대시보드",
+      "short_name": "대시보드",
+      "description": "사용량 통계 확인",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
 } 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../../contexts/UserContext';
-import { Button } from '../common';
-import { loginUser } from '../../utils/api';
+import { Button, LoadingSpinner } from '../common';
+import SocialLogin from './SocialLogin';
 
 // 환경별 로깅 함수
 const logDebug = (...args) => {
@@ -15,115 +15,127 @@ const logError = (...args) => {
 };
 
 export default function LoginForm({ onClose, onSwitchToSignup, onSwitchToForgotPassword }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const { login } = useUser();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    logDebug('Login form submitted', { email, password: '***' });
+    logDebug('Login form submitted', { email: formData.email, password: '***' });
     setError('');
     setLoading(true);
 
     try {
       logDebug('Calling loginUser API...');
-      // 실제 API 호출
-      const result = await loginUser({ email, password });
-      logDebug('Login API result:', result);
+      await login(formData.email, formData.password);
+      logDebug('Login API result: success');
       
-      if (result.success) {
-        // 토큰 저장
-        localStorage.setItem('authToken', result.data.token);
-        logDebug('Token saved to localStorage');
-        
-        // UserContext를 통해 로그인 상태 업데이트
-        login(result.data.user);
-        logDebug('User context updated');
-        
-        // 모달 닫기
-        if (onClose) onClose();
-      } else {
-        setError(result.message || '로그인에 실패했습니다.');
-      }
+      // 모달 닫기
+      if (onClose) onClose();
     } catch (err) {
       logError('Login error:', err);
-      setError(err.message || '로그인 중 오류가 발생했습니다.');
+      setError(err.message || '로그인에 실패했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleSocialLoginSuccess = (userData) => {
+    // 소셜 로그인 성공 시 처리
+    onClose();
+  };
+
+  const handleSocialLoginError = (error) => {
+    setError(error);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
-      
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">이메일 주소</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="you@example.com"
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">비밀번호</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
-      
-      <div className="flex items-center justify-between">
-        <div className="text-sm">
-          <button 
+    <div className="space-y-6">
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            이메일
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="이메일을 입력하세요"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            비밀번호
+          </label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="비밀번호를 입력하세요"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          className="w-full"
+          disabled={loading}
+        >
+          {loading ? <LoadingSpinner size="sm" /> : '로그인'}
+        </Button>
+      </form>
+
+      {/* 소셜 로그인 */}
+      <SocialLogin 
+        onSuccess={handleSocialLoginSuccess}
+        onError={handleSocialLoginError}
+      />
+
+      <div className="text-center space-y-2">
+        <button
+          type="button"
+          onClick={onSwitchToForgotPassword}
+          className="text-sm text-blue-600 hover:text-blue-700"
+        >
+          비밀번호를 잊으셨나요?
+        </button>
+        
+        <div className="text-sm text-gray-600">
+          계정이 없으신가요?{' '}
+          <button
             type="button"
-            onClick={onSwitchToForgotPassword}
-            className="font-medium text-blue-600 hover:text-blue-500"
+            onClick={onSwitchToSignup}
+            className="text-blue-600 hover:text-blue-700 font-medium"
           >
-            비밀번호를 잊으셨나요?
+            회원가입
           </button>
         </div>
       </div>
-      
-      <Button type="submit" variant="primary" className="w-full" disabled={loading}>
-        {loading ? '로그인 중...' : '로그인'}
-      </Button>
-      
-      <div className="relative my-4">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">또는</span>
-        </div>
-      </div>
-
-      <div>
-        {/* TODO: 소셜 로그인 버튼 구현 */}
-        <Button variant="secondary" className="w-full">Google 계정으로 로그인</Button>
-      </div>
-
-      <div className="text-sm text-center">
-        계정이 없으신가요?{' '}
-        <button 
-          type="button" 
-          onClick={onSwitchToSignup}
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
-          회원가입
-        </button>
-      </div>
-    </form>
+    </div>
   );
 } 

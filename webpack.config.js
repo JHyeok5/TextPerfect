@@ -10,6 +10,7 @@ const packageJson = require("./package.json");
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+  const isDevelopment = !isProduction;
   process.env.NODE_ENV = isProduction ? 'production' : 'development';
   const repoName = new URL(packageJson.homepage).pathname; // "/TextPerfect"
   const publicPath = isProduction ? '/' : '/';
@@ -100,7 +101,8 @@ module.exports = (env, argv) => {
                   helpers: true,
                   regenerator: true,
                   useESModules: false
-                }]
+                }],
+                ...(isDevelopment ? [require.resolve('react-refresh/babel')] : [])
               ],
               cacheDirectory: true,
               cacheCompression: false
@@ -185,7 +187,7 @@ module.exports = (env, argv) => {
         }),
         new webpack.optimize.AggressiveMergingPlugin()
       ] : []),
-      ...(!isProduction ? [
+      ...(isDevelopment ? [
         new ReactRefreshWebpackPlugin()
       ] : [])
     ],
@@ -203,10 +205,12 @@ module.exports = (env, argv) => {
         directory: path.join(__dirname, 'public')
       }
     },
+    stats: {
+      children: false,
+      modules: false,
+    },
     performance: {
       hints: isProduction ? 'warning' : false,
-      maxEntrypointSize: 244000,
-      maxAssetSize: 244000
     }
   };
 };
