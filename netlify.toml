@@ -1,10 +1,10 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "netlify/functions"
+  functions = ".netlify/functions"
 
 [functions]
-  directory = "netlify/functions"
+  directory = ".netlify/functions"
 
 # 보안 헤더 설정
 [[headers]]
@@ -29,10 +29,9 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA 라우팅 (HTML 요청만)
+# SPA 라우팅 (Functions 제외)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  headers = {Accept = "text/html"}
   force = false 
