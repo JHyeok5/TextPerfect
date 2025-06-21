@@ -44,7 +44,7 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
                 <input 
                   type="email" 
-                  value="user@example.com" 
+                  value={user?.email || ''} 
                   className="w-full p-2 border rounded-md" 
                   readOnly 
                 />
@@ -53,7 +53,11 @@ export default function ProfilePage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">가입일</label>
                 <input 
                   type="text" 
-                  value="2024년 1월 1일" 
+                  value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }) : ''} 
                   className="w-full p-2 border rounded-md" 
                   readOnly 
                 />
@@ -93,19 +97,19 @@ export default function ProfilePage() {
             <h3 className="text-lg font-semibold mb-4">활동 통계</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">42</div>
+                <div className="text-2xl font-bold text-blue-600">{user?.stats?.optimizedDocs || 0}</div>
                 <div className="text-sm text-gray-600">최적화한 문서</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">1,234</div>
+                <div className="text-2xl font-bold text-green-600">{user?.stats?.improvedSentences || 0}</div>
                 <div className="text-sm text-gray-600">개선한 문장</div>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600">87%</div>
+                <div className="text-2xl font-bold text-yellow-600">{user?.stats?.avgImprovement || 0}%</div>
                 <div className="text-sm text-gray-600">평균 개선도</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">15</div>
+                <div className="text-2xl font-bold text-purple-600">{user?.stats?.consecutiveDays || 0}</div>
                 <div className="text-sm text-gray-600">연속 사용일</div>
               </div>
             </div>

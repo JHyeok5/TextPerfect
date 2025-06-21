@@ -98,7 +98,7 @@ exports.handler = async (event, context) => {
     // 임시 로그인 처리 (실제 구현 전까지)
     console.log('✅ Login attempt for:', email);
     
-    // 임시 사용자 데이터
+    // 사용자 데이터 (실제 로그인 정보 반영)
     const userData = {
       id: 'temp-user-id',
       email: email,
@@ -112,12 +112,18 @@ exports.handler = async (event, context) => {
           maxTextLength: 1000
         }
       },
+      stats: {
+        optimizedDocs: 0,
+        improvedSentences: 0,
+        avgImprovement: 0,
+        consecutiveDays: 0
+      },
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString()
     };
 
-    // 임시 토큰
-    const token = 'temp-jwt-token-' + Date.now();
+    // 임시 토큰 (실제 이메일 정보 포함)
+    const token = 'temp-jwt-token-' + btoa(email) + '-' + Date.now();
 
     console.log('✅ Login successful for:', email);
 

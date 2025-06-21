@@ -92,11 +92,35 @@ exports.handler = async (event, context) => {
 
     console.log('✅ Token received:', token.substring(0, 20) + '...');
 
-    // 임시 사용자 데이터 (실제 구현 전까지)
+    // 토큰에서 사용자 정보 추출 (임시로 토큰에서 이메일 추출)
+    // 실제로는 JWT 디코딩이나 DB 조회를 해야 함
+    let userEmail = 'user@example.com';
+    let userNickname = 'User';
+    
+    // 토큰에서 기본 정보 추출 시도 (간단한 방법)
+    try {
+      if (token.includes('temp-jwt-token-')) {
+        // 로그인 시 생성한 임시 토큰에서 정보 추출
+        const tokenParts = token.split('-');
+        if (tokenParts.length >= 3) {
+          try {
+            userEmail = atob(tokenParts[1]); // base64 디코딩
+            userNickname = userEmail.split('@')[0];
+            console.log('✅ Extracted email from token:', userEmail);
+          } catch (decodeError) {
+            console.log('Failed to decode email from token');
+          }
+        }
+      }
+    } catch (e) {
+      console.log('Token parsing failed, using defaults');
+    }
+
+    // 사용자 데이터 (실제 사용자 정보 반영)
     const userData = {
       id: 'temp-user-id',
-      email: 'user@example.com',
-      nickname: 'TestUser',
+      email: userEmail,
+      nickname: userNickname,
       level: 1,
       exp: 0,
       subscription: {
@@ -105,6 +129,12 @@ exports.handler = async (event, context) => {
           monthlyDocs: 0,
           maxTextLength: 1000
         }
+      },
+      stats: {
+        optimizedDocs: 0,
+        improvedSentences: 0,
+        avgImprovement: 0,
+        consecutiveDays: 0
       },
       createdAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString(),

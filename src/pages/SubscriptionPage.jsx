@@ -1,9 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SUBSCRIPTION_PLANS } from '../constants';
 import { Header, Footer, Card, Button } from '../components/common';
+import { useUser } from '../contexts/UserContext';
+import { toast } from 'react-toastify';
 
 export default function SubscriptionPage() {
   const plans = Object.values(SUBSCRIPTION_PLANS);
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscribe = async (planName) => {
+    if (planName === 'Free') {
+      toast.info('이미 무료 플랜을 사용 중입니다.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // 임시 결제 처리 시뮬레이션
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // 실제 구현에서는 여기서 결제 API 호출
+      toast.info('🚧 결제 시스템은 현재 개발 중입니다.\n정식 서비스 오픈 시 이용 가능합니다.');
+      
+    } catch (error) {
+      toast.error('결제 처리 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCurrentPlan = () => {
+    return user?.subscription?.plan || 'FREE';
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -51,8 +80,14 @@ export default function SubscriptionPage() {
               <Button 
                 variant={index === 1 ? "primary" : "secondary"} 
                 className="w-full"
+                onClick={() => handleSubscribe(plan.name)}
+                disabled={loading || (plan.name === 'Free' && getCurrentPlan() === 'FREE')}
               >
-                {plan.price === 0 ? '현재 플랜' : '구독하기'}
+                {loading ? '처리 중...' : 
+                 plan.price === 0 ? 
+                   (getCurrentPlan() === 'FREE' ? '현재 플랜' : '무료 플랜으로 변경') : 
+                   (getCurrentPlan() === plan.name.toUpperCase() ? '현재 플랜' : '구독하기')
+                }
               </Button>
             </div>
           </Card>

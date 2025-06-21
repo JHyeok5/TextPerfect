@@ -5,7 +5,7 @@ export const SUBSCRIPTION_PLANS = {
   FREE: {
     name: 'Free',
     price: 0,
-    features: ['기본 분석', '템플릿 일부', 'AI 코치 체험'],
+    features: ['기본 분석', '월 10개 문서', '최대 3,000자'],
     limit: {
       monthlyDocs: 10,
       maxTextLength: 3000,
@@ -14,19 +14,10 @@ export const SUBSCRIPTION_PLANS = {
   PREMIUM: {
     name: 'Premium',
     price: 9900,
-    features: ['고급 분석', '모든 템플릿', 'AI 코치', '레벨링/배지'],
+    features: ['고급 분석', '모든 템플릿', 'AI 코치', '월 100개 문서', '최대 10,000자', '우선 지원'],
     limit: {
       monthlyDocs: 100,
       maxTextLength: 10000,
-    },
-  },
-  PRO: {
-    name: 'Pro',
-    price: 19900,
-    features: ['팀 관리', 'API 연동', '우선 지원'],
-    limit: {
-      monthlyDocs: 1000,
-      maxTextLength: 30000,
     },
   },
 };

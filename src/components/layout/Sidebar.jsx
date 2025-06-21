@@ -3,14 +3,22 @@ import { useLocation } from 'react-router-dom';
 import EditorSidebar from '../../pages/EditorPage/EditorSidebar';
 import { useTextContext } from '../../contexts/TextContext';
 
-// 나중에 페이지가 추가되면 여기에 사이드바 컴포넌트를 매핑합니다.
+// 사이드바를 표시할 페이지 설정
 const sidebarConfig = {
   '/editor': 'EditorSidebar', // 문자열로 표시하여 조건부 렌더링
 };
 
+// 사이드바를 숨길 페이지들
+const hideSidebarPages = ['/profile', '/subscription'];
+
 export default function Sidebar() {
   const location = useLocation();
   const currentSidebarType = sidebarConfig[location.pathname];
+  
+  // 특정 페이지에서는 사이드바를 숨김
+  if (hideSidebarPages.includes(location.pathname)) {
+    return null;
+  }
   
   // EditorPage용 Context 사용
   const { 

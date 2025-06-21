@@ -33,10 +33,6 @@ const USAGE_LIMITS = {
   PREMIUM: {
     dailyCharacters: 10000,
     maxTextLength: 10000,
-  },
-  PRO: {
-    dailyCharacters: 100000,
-    maxTextLength: 30000,
   }
 };
 
