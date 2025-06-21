@@ -4,6 +4,13 @@ import { useUser } from '../../contexts/UserContext';
 import { ProgressBar, Button, Modal } from '../common';
 import { LoginForm, SignupForm } from '../auth';
 
+// 환경별 로깅 함수
+const logDebug = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(...args);
+  }
+};
+
 // 더미 유저 정보 제거 (실제 인증 시스템 구현 완료)
 
 export default function Header() {
@@ -12,24 +19,24 @@ export default function Header() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 
   const openLoginModal = () => {
-    console.log('Opening login modal');
+    logDebug('Opening login modal');
     setIsSignupModalOpen(false);
     setIsLoginModalOpen(true);
   };
 
   const openSignupModal = () => {
-    console.log('Opening signup modal');
+    logDebug('Opening signup modal');
     setIsLoginModalOpen(false);
     setIsSignupModalOpen(true);
   };
 
   const handleLoginClick = () => {
-    console.log('Login button clicked');
+    logDebug('Login button clicked');
     openLoginModal();
   };
 
   const handleSignupClick = () => {
-    console.log('Signup button clicked');
+    logDebug('Signup button clicked');
     openSignupModal();
   };
 

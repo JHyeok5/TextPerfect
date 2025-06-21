@@ -3,6 +3,17 @@ import { Button } from '../common';
 import { useUser } from '../../contexts/UserContext';
 import { signupUser } from '../../utils/api';
 
+// 환경별 로깅 함수
+const logDebug = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(...args);
+  }
+};
+
+const logError = (...args) => {
+  console.error(...args);
+};
+
 export default function SignupForm({ onClose, onSwitchToLogin }) {
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
@@ -14,7 +25,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signup form submitted', { nickname, email, password: '***' });
+    logDebug('Signup form submitted', { nickname, email, password: '***' });
     setError('');
     setLoading(true);
 
@@ -26,7 +37,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
     }
 
     try {
-      console.log('Calling signupUser API...');
+      logDebug('Calling signupUser API...');
       // 실제 API 호출
       const result = await signupUser({ 
         nickname, 
@@ -34,16 +45,16 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
         password,
         passwordConfirm 
       });
-      console.log('Signup API result:', result);
+      logDebug('Signup API result:', result);
       
       if (result.success) {
         // 토큰 저장
         localStorage.setItem('authToken', result.data.token);
-        console.log('Token saved to localStorage');
+        logDebug('Token saved to localStorage');
         
         // 가입 성공 시, 자동 로그인 처리
         login(result.data.user);
-        console.log('User context updated');
+        logDebug('User context updated');
         
         // 모달 닫기
         if (onClose) onClose();
@@ -56,7 +67,7 @@ export default function SignupForm({ onClose, onSwitchToLogin }) {
         }
       }
     } catch (err) {
-      console.error('Signup error:', err);
+      logError('Signup error:', err);
       setError(err.message || '회원가입 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

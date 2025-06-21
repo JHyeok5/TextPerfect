@@ -1,5 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// 환경별 로깅 함수
+const logDebug = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(...args);
+  }
+};
+
+const logError = (...args) => {
+  console.error(...args);
+};
+
 // User 정보 기본값 (비로그인 상태)
 const initialUser = null;
 
@@ -41,37 +52,37 @@ export function UserProvider({ children }) {
   // 앱 시작 시 토큰으로 로그인 상태 복원
   useEffect(() => {
     const initializeAuth = async () => {
-      console.log('UserContext: Initializing auth...');
+      logDebug('UserContext: Initializing auth...');
       const token = localStorage.getItem('authToken');
-      console.log('UserContext: Found token:', !!token);
+      logDebug('UserContext: Found token:', !!token);
       
       if (token) {
         try {
           // validateAndRefreshAuth를 동적으로 import (순환 참조 방지)
           const { validateAndRefreshAuth } = await import('../utils/api');
-          console.log('UserContext: Validating token...');
+          logDebug('UserContext: Validating token...');
           const userData = await validateAndRefreshAuth();
           if (userData) {
-            console.log('UserContext: Auto login successful:', userData);
+            logDebug('UserContext: Auto login successful:', userData);
             setUser(userData);
           } else {
-            console.log('UserContext: Token validation failed');
+            logDebug('UserContext: Token validation failed');
           }
         } catch (error) {
-          console.error('UserContext: Auto login failed:', error);
+          logError('UserContext: Auto login failed:', error);
           // 토큰이 무효하면 제거
           localStorage.removeItem('authToken');
         }
       }
       setLoading(false);
-      console.log('UserContext: Auth initialization complete');
+      logDebug('UserContext: Auth initialization complete');
     };
 
     initializeAuth();
   }, []);
 
   const login = (userData) => {
-    console.log('UserContext login called with:', userData);
+    logDebug('UserContext login called with:', userData);
     setUser(userData);
     // 토큰은 API 호출 시 이미 저장됨
   };
@@ -82,7 +93,7 @@ export function UserProvider({ children }) {
       const { logoutUser } = await import('../utils/api');
       await logoutUser();
     } catch (error) {
-      console.error('Logout API failed:', error);
+      logError('Logout API failed:', error);
       // API 실패해도 로컬 상태는 정리
     } finally {
       setUser(null);

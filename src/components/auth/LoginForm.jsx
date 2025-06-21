@@ -3,6 +3,17 @@ import { useUser } from '../../contexts/UserContext';
 import { Button } from '../common';
 import { loginUser } from '../../utils/api';
 
+// 환경별 로깅 함수
+const logDebug = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(...args);
+  }
+};
+
+const logError = (...args) => {
+  console.error(...args);
+};
+
 export default function LoginForm({ onClose, onSwitchToSignup }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,24 +23,24 @@ export default function LoginForm({ onClose, onSwitchToSignup }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login form submitted', { email, password: '***' });
+    logDebug('Login form submitted', { email, password: '***' });
     setError('');
     setLoading(true);
 
     try {
-      console.log('Calling loginUser API...');
+      logDebug('Calling loginUser API...');
       // 실제 API 호출
       const result = await loginUser({ email, password });
-      console.log('Login API result:', result);
+      logDebug('Login API result:', result);
       
       if (result.success) {
         // 토큰 저장
         localStorage.setItem('authToken', result.data.token);
-        console.log('Token saved to localStorage');
+        logDebug('Token saved to localStorage');
         
         // UserContext를 통해 로그인 상태 업데이트
         login(result.data.user);
-        console.log('User context updated');
+        logDebug('User context updated');
         
         // 모달 닫기
         if (onClose) onClose();
@@ -37,7 +48,7 @@ export default function LoginForm({ onClose, onSwitchToSignup }) {
         setError(result.message || '로그인에 실패했습니다.');
       }
     } catch (err) {
-      console.error('Login error:', err);
+      logError('Login error:', err);
       setError(err.message || '로그인 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);

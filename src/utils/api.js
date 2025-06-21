@@ -3,14 +3,47 @@ import { toast } from 'react-toastify';
 import handleError from './errorHandler';
 import { API_ENDPOINTS } from '../constants';
 
+// 환경별 기본 URL 설정
+const getBaseUrl = () => {
+  // 프로덕션 환경 (배포된 사이트)
+  if (process.env.NODE_ENV === 'production') {
+    return window.location.origin;
+  }
+  
+  // 개발 환경
+  return 'http://localhost:3000';
+};
+
+// 환경별 로깅 함수
+const logDebug = (...args) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(...args);
+  }
+};
+
+const logError = (...args) => {
+  console.error(...args);
+};
+
 // 기본 API 요청 함수
 export async function apiRequest(endpoint, options = {}) {
-  const url = API_ENDPOINTS[endpoint] || endpoint;
+  // 절대 경로인 경우 그대로 사용, 아니면 기본 URL과 결합
+  let url;
+  if (endpoint.startsWith('http') || endpoint.startsWith('/.netlify/functions/')) {
+    url = endpoint.startsWith('http') ? endpoint : `${getBaseUrl()}${endpoint}`;
+  } else {
+    url = API_ENDPOINTS[endpoint] || endpoint;
+  }
+  
   const defaultHeaders = {
     'Content-Type': 'application/json',
   };
 
-  console.log('API Request:', { endpoint, url, options });
+  logDebug('API Request:', { endpoint, url, baseUrl: getBaseUrl(), options });
+
+  // 타임아웃 처리를 위한 AbortController 설정
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000); // 60초
 
   try {
     const response = await fetch(url, {
@@ -19,27 +52,27 @@ export async function apiRequest(endpoint, options = {}) {
         ...defaultHeaders,
         ...options.headers,
       },
-      // 타임아웃 설정 (AbortController 사용)
-      signal: AbortSignal.timeout(60000), // 60초
+      signal: controller.signal,
     });
 
-    console.log('API Response status:', response.status);
+    clearTimeout(timeoutId);
+    logDebug('API Response status:', response.status);
 
     let data;
     try {
       data = await response.json();
     } catch (parseError) {
-      console.error('JSON parsing error:', parseError);
+      logError('JSON parsing error:', parseError);
       throw new Error('서버 응답을 처리할 수 없습니다.');
     }
     
     if (!response.ok) {
-      console.error('API Error:', { status: response.status, data });
+      logError('API Error:', { status: response.status, data });
       
       // 상태 코드별 오류 메시지
       let errorMessage;
       if (response.status === 400) {
-        errorMessage = data.error || '잘못된 요청입니다.';
+        errorMessage = data.error || data.message || '잘못된 요청입니다.';
       } else if (response.status === 401) {
         errorMessage = '인증이 필요합니다.';
       } else if (response.status === 403) {
@@ -51,7 +84,7 @@ export async function apiRequest(endpoint, options = {}) {
       } else if (response.status >= 500) {
         errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
       } else {
-        errorMessage = data.error || '알 수 없는 오류가 발생했습니다.';
+        errorMessage = data.error || data.message || '알 수 없는 오류가 발생했습니다.';
       }
       
       const error = new Error(errorMessage);
@@ -60,10 +93,11 @@ export async function apiRequest(endpoint, options = {}) {
       throw error;
     }
 
-    console.log('API Success:', data);
+    logDebug('API Success:', data);
     return data;
   } catch (error) {
-    console.error('API Request failed:', error);
+    clearTimeout(timeoutId);
+    logError('API Request failed:', error);
     
     // 네트워크 오류 처리
     if (error.name === 'AbortError') {
