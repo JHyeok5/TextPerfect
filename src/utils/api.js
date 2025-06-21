@@ -160,6 +160,16 @@ export async function loginUser(credentials) {
 }
 
 /**
+ * 비밀번호 재설정 이메일 발송 API 호출
+ */
+export async function requestPasswordReset(email) {
+  return await apiRequest('https://zingy-pixie-14c20e.netlify.app/.netlify/functions/auth-forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email })
+  });
+}
+
+/**
  * 현재 사용자 정보 조회
  */
 export async function getCurrentUser() {

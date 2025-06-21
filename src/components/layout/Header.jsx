@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { ProgressBar, Button, Modal } from '../common';
-import { LoginForm, SignupForm } from '../auth';
+import { LoginForm, SignupForm, ForgotPasswordForm } from '../auth';
 
 // 환경별 로깅 함수
 const logDebug = (...args) => {
@@ -17,17 +17,27 @@ export default function Header() {
   const { user, isAuthenticated, login, logout } = useUser();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
 
   const openLoginModal = () => {
     logDebug('Opening login modal');
     setIsSignupModalOpen(false);
+    setIsForgotPasswordModalOpen(false);
     setIsLoginModalOpen(true);
   };
 
   const openSignupModal = () => {
     logDebug('Opening signup modal');
     setIsLoginModalOpen(false);
+    setIsForgotPasswordModalOpen(false);
     setIsSignupModalOpen(true);
+  };
+
+  const openForgotPasswordModal = () => {
+    logDebug('Opening forgot password modal');
+    setIsLoginModalOpen(false);
+    setIsSignupModalOpen(false);
+    setIsForgotPasswordModalOpen(true);
   };
 
   const handleLoginClick = () => {
@@ -87,7 +97,8 @@ export default function Header() {
       <Modal open={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} title="로그인">
         <LoginForm 
           onClose={() => setIsLoginModalOpen(false)} 
-          onSwitchToSignup={openSignupModal} 
+          onSwitchToSignup={openSignupModal}
+          onSwitchToForgotPassword={openForgotPasswordModal}
         />
       </Modal>
 
@@ -95,6 +106,13 @@ export default function Header() {
         <SignupForm 
           onClose={() => setIsSignupModalOpen(false)}
           onSwitchToLogin={openLoginModal}
+        />
+      </Modal>
+
+      <Modal open={isForgotPasswordModalOpen} onClose={() => setIsForgotPasswordModalOpen(false)} title="비밀번호 찾기">
+        <ForgotPasswordForm 
+          onClose={() => setIsForgotPasswordModalOpen(false)}
+          onBackToLogin={openLoginModal}
         />
       </Modal>
     </header>

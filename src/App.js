@@ -7,6 +7,8 @@ import { TextContextProvider } from './contexts/TextContext';
 import Layout from './components/layout/Layout';
 import { LoadingSpinner } from './components/common';
 import UsageLimitModal from './components/common/UsageLimitModal';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // 라우트 기반 코드 스플리팅
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -74,6 +76,17 @@ function App() {
                   </Routes>
                 </Suspense>
                 <UsageLimitModal />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                />
               </Layout>
             </TextContextProvider>
           </AnalyticsProvider>
