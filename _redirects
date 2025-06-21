@@ -1,0 +1,5 @@
+# API 라우팅
+/api/*  /.netlify/functions/:splat  200
+
+# SPA 라우팅 (Functions 제외)
+/*  /index.html  200 
