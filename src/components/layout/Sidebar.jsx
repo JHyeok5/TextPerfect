@@ -9,7 +9,7 @@ const sidebarConfig = {
 };
 
 // 사이드바를 숨길 페이지들
-const hideSidebarPages = ['/profile', '/subscription'];
+const hideSidebarPages = ['/', '/profile', '/subscription'];
 
 export default function Sidebar() {
   const location = useLocation();
